@@ -11,6 +11,8 @@ import { EmailVerificationModule } from './email-verification/email-verification
 import { MailModule } from './mail/mail.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PasswordResetModule } from './password-reset/password-reset.module';
+import { FilesModule } from './files/files.module';
+import { ContentSourceModule } from './content-source/content-source.module';
 
 @Module({
   imports: [
@@ -19,9 +21,18 @@ import { PasswordResetModule } from './password-reset/password-reset.module';
     }),
 
     MongooseModule.forRootAsync({
+      connectionName: 'USER_DB',
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('USER_DB_URI'),
+      }),
+    }),
+
+    MongooseModule.forRootAsync({
+      connectionName: 'CONTENT_DB',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.get<string>('CONTENT_DB_URI'),
       }),
     }),
 
@@ -40,6 +51,8 @@ import { PasswordResetModule } from './password-reset/password-reset.module';
     EmailVerificationModule,
     MailModule,
     PasswordResetModule,
+    FilesModule,
+    ContentSourceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

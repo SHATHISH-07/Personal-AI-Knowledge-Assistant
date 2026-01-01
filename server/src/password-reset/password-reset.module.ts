@@ -6,7 +6,7 @@ import { PasswordReset, PasswordResetSchema } from './schemas/passwordReset.sche
     imports: [
         MongooseModule.forFeature([
             { name: PasswordReset.name, schema: PasswordResetSchema }
-        ]),
+        ], 'USER_DB'),
     ],
     exports: [MongooseModule],
 })

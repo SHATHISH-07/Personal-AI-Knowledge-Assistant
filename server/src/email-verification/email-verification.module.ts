@@ -6,7 +6,7 @@ import { EmailVerification, EmailVerificationSchema } from './schemas/emailVerif
     imports: [
         MongooseModule.forFeature([
             { name: EmailVerification.name, schema: EmailVerificationSchema },
-        ]),
+        ], 'USER_DB'),
     ],
     exports: [MongooseModule],
 })

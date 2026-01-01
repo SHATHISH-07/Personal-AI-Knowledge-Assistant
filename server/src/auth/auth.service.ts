@@ -20,9 +20,9 @@ export class AuthService {
     private googleClient: OAuth2Client;
 
     constructor(
-        @InjectModel(User.name) private userModule: Model<UserDocument>,
-        @InjectModel(EmailVerification.name) private emailVerificationModel: Model<EmailVerificationDocument>,
-        @InjectModel(PasswordReset.name) private passwordResetModel: Model<PasswordReset>,
+        @InjectModel(User.name, 'USER_DB') private userModule: Model<UserDocument>,
+        @InjectModel(EmailVerification.name, 'USER_DB') private emailVerificationModel: Model<EmailVerificationDocument>,
+        @InjectModel(PasswordReset.name, 'USER_DB') private passwordResetModel: Model<PasswordReset>,
         private jwtService: JwtService,
         private configService: ConfigService,
         private mailService: MailService,

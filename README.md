@@ -156,15 +156,18 @@ This project provides a **private, user-scoped AI assistant** where:
 ```json
 {
   "_id": "u1",
+  "name": "String",
   "email": "example.email@gmail.com",
+  "isEmailVerified": "Boolean",
   "authProvider": "local | google",
   "passwordHash": "hashed_password_or_null",
   "googleId": "google_user_id_or_null",
-  "profilePic": "profile_image_url_or_null",
+  "profilePictureUrl": "profile_image_url_or_null",
   "isActive": true,
   "isArchived": false,
   "createdAt": "Date",
-  "updatedAt": "Date"
+  "updatedAt": "Date",
+  "refreshTokenHash": "String"
 }
 ```
 
@@ -228,6 +231,12 @@ POST /auth/login
 POST /auth/google
 
 POST /auth/logout
+
+POST /auth/refresh
+
+POST /auth/resend-verification
+
+POST /auth/verify-email
 
 ---
 

@@ -11,6 +11,8 @@ import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 import { EmailVerification, EmailVerificationDocument } from 'src/email-verification/schemas/emailVerification.schema';
 import { MailService } from 'src/mail/mail.service';
+import { PasswordReset } from 'src/password-reset/schemas/passwordReset.schema';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +22,10 @@ export class AuthService {
     constructor(
         @InjectModel(User.name) private userModule: Model<UserDocument>,
         @InjectModel(EmailVerification.name) private emailVerificationModel: Model<EmailVerificationDocument>,
+        @InjectModel(PasswordReset.name) private passwordResetModel: Model<PasswordReset>,
         private jwtService: JwtService,
         private configService: ConfigService,
-        private mailService: MailService
+        private mailService: MailService,
     ) {
         this.googleClient = new OAuth2Client(
             this.configService.get<string>('GOOGLE_CLIENT_ID'),
@@ -268,6 +271,61 @@ export class AuthService {
         );
 
         return { message: 'Logged out successfully' };
+    }
+
+    async forgotPassword(email: string) {
+        const user = await this.userModule.findOne({ email });
+        if (!user) {
+            return { message: 'If the email exists, reset link sent' };
+        }
+
+        await this.passwordResetModel.deleteMany({ userId: user._id });
+
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = await bcrypt.hash(rawToken, 10);
+
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 1);
+
+        await this.passwordResetModel.create({
+            userId: user._id,
+            tokenHash,
+            expiresAt,
+        });
+
+        await this.mailService.sendPasswordResetEmail(
+            user.email,
+            rawToken,
+        );
+
+        return { message: 'If the email exists, reset link sent' };
+    }
+
+    async resetPassword(dto: ResetPasswordDto) {
+        const records = await this.passwordResetModel.find({
+            expiresAt: { $gt: new Date() },
+        });
+
+        for (const record of records) {
+            const isMatch = await bcrypt.compare(dto.token, record.tokenHash);
+            if (!isMatch) continue;
+
+            const passwordHash = await bcrypt.hash(dto.password, 10);
+
+            await this.userModule.updateOne(
+                { _id: record.userId },
+                {
+                    passwordHash,
+                    refreshTokenHash: null,
+                },
+            );
+
+            await this.passwordResetModel.deleteOne({ _id: record._id });
+
+            return { message: 'Password reset successful' };
+        }
+
+        throw new BadRequestException('Invalid or expired reset token');
     }
 
 }

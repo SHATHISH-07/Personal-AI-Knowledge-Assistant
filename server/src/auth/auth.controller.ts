@@ -7,6 +7,8 @@ import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { GoogleAuthDto } from './dto/googleAuth.dto';
 import { ResendVerificationDto } from './dto/resendVerification.dto';
 import { Throttle } from '@nestjs/throttler';
+import { ForgotPasswordDto } from './dto/forgotPassword.dto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -48,6 +50,16 @@ export class AuthController {
     @Post('refresh')
     async refresh(@Body() dto: RefreshTokenDto) {
         return this.authService.refreshTokens(dto.refreshToken);
+    }
+
+    @Post('forgot-password')
+    async forgotPassword(@Body() dto: ForgotPasswordDto) {
+        return this.authService.forgotPassword(dto.email);
+    }
+
+    @Post('reset-password')
+    async resetPassword(@Body() dto: ResetPasswordDto) {
+        return this.authService.resetPassword(dto);
     }
 
     @Post('logout')

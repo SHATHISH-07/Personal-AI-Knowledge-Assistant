@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { EmailVerificationModule } from 'src/email-verification/email-verification.module';
 import { MailModule } from 'src/mail/mail.module';
+import { PasswordResetModule } from 'src/password-reset/password-reset.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MailModule } from 'src/mail/mail.module';
     ConfigModule,
     EmailVerificationModule,
     MailModule,
+    PasswordResetModule,
 
     JwtModule.registerAsync({
       inject: [ConfigService],

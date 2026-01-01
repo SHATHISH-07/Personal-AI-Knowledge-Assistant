@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
 import { MailModule } from './mail/mail.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PasswordResetModule } from './password-reset/password-reset.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     AuthModule,
     EmailVerificationModule,
     MailModule,
+    PasswordResetModule,
   ],
   controllers: [AppController],
   providers: [AppService],

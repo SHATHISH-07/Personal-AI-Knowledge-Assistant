@@ -11,6 +11,9 @@ export class User {
     @Prop({ unique: true })
     email: string;
 
+    @Prop({ default: false })
+    isEmailVerified: boolean;
+
     @Prop({ required: true, enum: ["google", "local"] })
     authProvider: "google" | "local";
 
@@ -20,11 +23,14 @@ export class User {
     @Prop()
     googleId?: string;
 
-    @Prop()
+    @Prop({ default: null })
     profilePictureUrl?: string;
 
     @Prop({ default: true })
     isActive: boolean;
+
+    @Prop({ default: false })
+    refreshTokenHash: string;
 
     @Prop({ default: false })
     isArchived: boolean;

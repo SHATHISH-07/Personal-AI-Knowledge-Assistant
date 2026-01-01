@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { EmailVerificationModule } from './email-verification/email-verification.module';
+import { MailModule } from './mail/mail.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -21,8 +24,20 @@ import { JwtModule } from '@nestjs/jwt';
       }),
     }),
 
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'default',
+          ttl: 300,
+          limit: 10,
+        }
+      ]
+    }),
+
     UsersModule,
     AuthModule,
+    EmailVerificationModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

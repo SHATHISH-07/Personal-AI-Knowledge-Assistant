@@ -13,6 +13,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { PasswordResetModule } from './password-reset/password-reset.module';
 import { FilesModule } from './files/files.module';
 import { ContentSourceModule } from './content-source/content-source.module';
+import { ChunkingModule } from './chunking/chunking.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ContentSourceModule } from './content-source/content-source.module';
     PasswordResetModule,
     FilesModule,
     ContentSourceModule,
+    ChunkingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

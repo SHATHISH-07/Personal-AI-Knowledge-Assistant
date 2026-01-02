@@ -4,6 +4,7 @@ import { ContentSource, ContentSourceDocument } from 'src/content-source/schemas
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileDocument } from './schemas/file.schema';
+import { ChunkingService } from 'src/chunking/chunking.service';
 
 @Injectable()
 export class FilesService {
@@ -11,6 +12,7 @@ export class FilesService {
         @InjectModel(File.name, 'USER_DB') private fileModel: Model<FileDocument>,
         @InjectModel(ContentSource.name, 'CONTENT_DB')
         private contentModel: Model<ContentSourceDocument>,
+        private readonly chunkingService: ChunkingService
     ) { }
 
     async handleUpload(file: Express.Multer.File, userId: string) {
@@ -35,6 +37,10 @@ export class FilesService {
         if (!extractedText.trim()) {
             throw new BadRequestException('File is empty');
         }
+
+        const chunks = this.chunkingService.chunk(extractedText, fileType);
+
+        console.log('Generated chunks: ', chunks)
 
         await this.contentModel.create({
             userId,

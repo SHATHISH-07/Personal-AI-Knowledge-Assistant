@@ -192,10 +192,10 @@ This project provides a **private, user-scoped AI assistant** where:
 {
   "id": "chunk_01",
   "embedding": [0.12, -0.45, "..."],
-  "text": "export async function login(...) { ... }",
   "metadata": {
     "userId": "u1",
     "fileId": "f1",
+    "text": "export async function login(...) { ... }",
     "fileName": "auth.ts",
     "feature": "login",
     "chunkIndex": 1,

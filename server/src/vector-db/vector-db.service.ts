@@ -22,9 +22,9 @@ export class VectorDbService implements OnModuleInit {
     }
 
     private async ensureCollection() {
-        const { collections } = await this.client.getCollections();
+        const collections = await this.client.getCollections();
 
-        const exists = collections.some(
+        const exists = collections.collections.some(
             (c) => c.name === this.collection,
         );
 
@@ -36,7 +36,13 @@ export class VectorDbService implements OnModuleInit {
                 },
             });
         }
+
+        await this.client.createPayloadIndex(this.collection, {
+            field_name: 'userId',
+            field_schema: 'keyword',
+        });
     }
+
 
     async upsert(
         id: string,
@@ -64,10 +70,13 @@ export class VectorDbService implements OnModuleInit {
         vector: number[],
         userId: string,
         limit = 5,
+        scoreThreshold = 0.15,
     ) {
-        return this.client.search(this.collection, {
+        const results = await this.client.search(this.collection, {
             vector,
             limit,
+            with_payload: true,
+            with_vector: false,
             filter: {
                 must: [
                     {
@@ -77,5 +86,18 @@ export class VectorDbService implements OnModuleInit {
                 ],
             },
         });
+
+        return results
+            .filter(r => r.score >= scoreThreshold)
+            .map(r => ({
+                score: r.score,
+                text: r.payload?.text,
+                fileId: r.payload?.fileId,
+                fileName: r.payload?.fileName,
+                chunkIndex: r.payload?.chunkIndex,
+                chunkType: r.payload?.chunkType,
+                feature: r.payload?.feature,
+            }));
     }
+
 }

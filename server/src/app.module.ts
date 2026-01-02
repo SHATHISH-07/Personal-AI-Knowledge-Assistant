@@ -16,6 +16,8 @@ import { ContentSourceModule } from './content-source/content-source.module';
 import { ChunkingModule } from './chunking/chunking.module';
 import { EmbeddingModule } from './embedding/embedding.module';
 import { VectorDbModule } from './vector-db/vector-db.module';
+import { LlmModule } from './llm/llm.module';
+import { AskModule } from './ask/ask.module';
 
 @Module({
   imports: [
@@ -59,6 +61,8 @@ import { VectorDbModule } from './vector-db/vector-db.module';
     ChunkingModule,
     EmbeddingModule,
     VectorDbModule,
+    LlmModule,
+    AskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,6 +5,9 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileDocument } from './schemas/file.schema';
 import { ChunkingService } from 'src/chunking/chunking.service';
+import { VectorDbService } from 'src/vector-db/vector-db.service';
+import { EmbeddingService } from 'src/embedding/embedding.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class FilesService {
@@ -12,7 +15,9 @@ export class FilesService {
         @InjectModel(File.name, 'USER_DB') private fileModel: Model<FileDocument>,
         @InjectModel(ContentSource.name, 'CONTENT_DB')
         private contentModel: Model<ContentSourceDocument>,
-        private readonly chunkingService: ChunkingService
+        private chunkingService: ChunkingService,
+        private embeddingService: EmbeddingService,
+        private vectorDbService: VectorDbService,
     ) { }
 
     async handleUpload(file: Express.Multer.File, userId: string) {
@@ -40,7 +45,26 @@ export class FilesService {
 
         const chunks = this.chunkingService.chunk(extractedText, fileType);
 
-        console.log('Generated chunks: ', chunks)
+        for (const chunk of chunks) {
+            if (!chunk.text.trim()) continue;
+
+            const embedding = await this.embeddingService.embed(chunk.text);
+
+            await this.vectorDbService.upsert(
+                randomUUID(),
+                embedding,
+                {
+                    userId,
+                    fileId: savedFile._id.toString(),
+                    fileName: savedFile.fileName,
+                    text: chunk.text,
+                    chunkIndex: chunk.metadata.chunkIndex,
+                    chunkType: chunk.metadata.chunkType,
+                    feature: chunk.metadata.feature,
+                    embeddingModel: 'all-MiniLM-L6-v2',
+                },
+            );
+        }
 
         await this.contentModel.create({
             userId,

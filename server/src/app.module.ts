@@ -14,6 +14,8 @@ import { PasswordResetModule } from './password-reset/password-reset.module';
 import { FilesModule } from './files/files.module';
 import { ContentSourceModule } from './content-source/content-source.module';
 import { ChunkingModule } from './chunking/chunking.module';
+import { EmbeddingModule } from './embedding/embedding.module';
+import { VectorDbModule } from './vector-db/vector-db.module';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { ChunkingModule } from './chunking/chunking.module';
     FilesModule,
     ContentSourceModule,
     ChunkingModule,
+    EmbeddingModule,
+    VectorDbModule,
   ],
   controllers: [AppController],
   providers: [AppService],

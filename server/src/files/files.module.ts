@@ -6,6 +6,8 @@ import { File, FileSchema } from './schemas/file.schema';
 import { ContentSourceModule } from 'src/content-source/content-source.module';
 import { ChunkingService } from 'src/chunking/chunking.service';
 import { ChunkingModule } from 'src/chunking/chunking.module';
+import { EmbeddingModule } from 'src/embedding/embedding.module';
+import { VectorDbModule } from 'src/vector-db/vector-db.module';
 
 @Module({
   providers: [FilesService],
@@ -16,7 +18,9 @@ import { ChunkingModule } from 'src/chunking/chunking.module';
     ],
       "USER_DB"),
     ContentSourceModule,
-    ChunkingModule
+    ChunkingModule,
+    EmbeddingModule,
+    VectorDbModule
   ]
 })
 export class FilesModule { }

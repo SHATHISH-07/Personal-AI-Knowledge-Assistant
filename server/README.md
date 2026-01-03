@@ -168,7 +168,9 @@ User
     │
     └── Logout
         └── Refresh token invalidated
+```
 
+```text
 User
 └── Upload File
     ├── MongoDB (File Metadata)
@@ -197,7 +199,9 @@ User
         │   ├── chunkIndex
         │   └── chunkType
         └── Indexed for semantic search
+```
 
+```text
 User
 └── Ask Question
     ├── Question → Embedding

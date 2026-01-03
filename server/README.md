@@ -247,35 +247,33 @@ User
 ## Environment Variables
 
 ```env
-# Server
 PORT=3000
-NODE_ENV=development
 
-# MongoDB
+## MongoDB URIs
 USER_DB_URI=
 CONTENT_DB_URI=
 
-# JWT
+## Auth
 JWT_SECRET=
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-
-# Google OAuth
 GOOGLE_CLIENT_ID=
 
-# Email (Brevo)
+## Email
+BREVO_SMTP_USER=
+BREVO_SMTP_PASS=
 MAIL_FROM=
-BREVO_API_KEY=
 
-# Embeddings
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-
-# Qdrant
+## Qdrant DataBase
 QDRANT_URL=
 QDRANT_API_KEY=
 QDRANT_COLLECTION=file_chunks
 
-# Groq LLM
+## LLM
+HF_TOKEN=
+EMBEDDING_MODEL=Xenova/all-MiniLM-L6-v2
+
 GROQ_API_KEY=
 GROQ_MODEL=llama-3.1-8b-instant
+
+FRONTEND_URL=(Optional use Postman Instead if only Backend Focused)
+
 ```

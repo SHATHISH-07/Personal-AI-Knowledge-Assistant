@@ -100,4 +100,7 @@ export class VectorDbService implements OnModuleInit {
             }));
     }
 
+    async health() {
+        await this.client.getCollections();
+    }
 }

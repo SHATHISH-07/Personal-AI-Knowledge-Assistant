@@ -264,6 +264,8 @@ POST /ask
 
 GET /health
 
+GET /health/ready
+
 ---
 
 ## Summary

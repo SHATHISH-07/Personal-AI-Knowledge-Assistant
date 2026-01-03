@@ -18,6 +18,7 @@ import { EmbeddingModule } from './embedding/embedding.module';
 import { VectorDbModule } from './vector-db/vector-db.module';
 import { LlmModule } from './llm/llm.module';
 import { AskModule } from './ask/ask.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { AskModule } from './ask/ask.module';
     VectorDbModule,
     LlmModule,
     AskModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

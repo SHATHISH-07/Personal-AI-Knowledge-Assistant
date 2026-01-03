@@ -1,98 +1,277 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767442525/Gemini_Generated_Image_kphguxkphguxkphg_rk2rnl.png" width="450" alt="OpenLuma Logo" />
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">OpenLuma – Personal AI Knowledge Assistant (Backend)</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  A production-ready backend for a personal AI knowledge assistant built with NestJS, MongoDB, Vector Search (Qdrant), and Retrieval-Augmented Generation (RAG).
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-Backend-red" />
+  <img src="https://img.shields.io/badge/MongoDB-Database-green" />
+  <img src="https://img.shields.io/badge/Qdrant-VectorDB-blue" />
+  <img src="https://img.shields.io/badge/RAG-Enabled-purple" />
+</p>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## Overview
 
-```bash
-$ npm install
+**OpenLuma** allows users to upload documents or code files and ask questions about their own content using AI.
+
+The system:
+
+- Extracts text from uploaded files
+- Splits content into meaningful chunks
+- Converts chunks into embeddings
+- Stores them in a vector database
+- Performs semantic search
+- Uses an LLM to answer questions with **citations**
+
+---
+
+## Core Features
+
+### Authentication & Security
+
+- Email + Password authentication
+- Google OAuth login
+- JWT access tokens
+- Refresh token rotation
+- Logout support
+- Rate-limited AI endpoints
+- User-isolated data (multi-tenant safe)
+
+---
+
+### Email Workflows
+
+- Email verification (secure token-based)
+- Resend verification email
+- Welcome email
+- Password reset flow (secure, time-limited tokens)
+
+---
+
+### File Management
+
+- Upload text or code files
+- Detect file type automatically
+- Store file metadata
+- Archive / unarchive files
+- Fetch user-specific files only
+
+---
+
+### Content Processing
+
+- Text extraction from uploaded files
+- Content stored in a separate MongoDB database
+- Chunking strategies:
+  - Text chunking (paragraph-aware)
+  - Code chunking (function/class aware)
+
+---
+
+### Embeddings (Free & Local)
+
+- Uses **Sentence Transformers**
+- Model: `all-MiniLM-L6-v2`
+- 384-dimensional embeddings
+- No paid API required
+- Production-safe
+
+---
+
+### Vector Database (Qdrant Cloud)
+
+- Vector storage using Qdrant
+- UUID-based point IDs
+- Payload metadata:
+  - userId
+  - fileId
+  - fileName
+  - chunkIndex
+  - chunkType
+  - feature (for code)
+- Indexed user filtering for secure search
+
+---
+
+### Semantic Search
+
+- Query → embedding
+- Cosine similarity search
+- Score threshold filtering
+- User-specific results only
+
+---
+
+### AI Question Answering (`/ask`)
+
+- Retrieval-Augmented Generation (RAG)
+- Context builder from top matching chunks
+- Safe prompt (no hallucinations)
+- Answers returned with sources
+- LLM provider abstraction (pluggable)
+
+---
+
+### LLM Integration
+
+- Current provider: **Groq Cloud**
+- Model: `llama-3.1-8b-instant`
+- Extremely fast & free tier
+- Easily switchable to:
+  - Google Gemini
+  - DeepSeek
+  - OpenAI (future)
+
+---
+
+## Architecture
+
+```text
+User
+└── Authentication
+    ├── Register
+    │   ├── MongoDB (User DB)
+    │   │   ├── email
+    │   │   ├── passwordHash
+    │   │   ├── authProvider
+    │   │   └── isEmailVerified
+    │   │
+    │   ├── Email Verification
+    │   │   ├── Token generated
+    │   │   ├── Hashed token stored
+    │   │   └── Verification email sent
+    │   │
+    │   └── Welcome Email (after verification)
+    │
+    ├── Login
+    │   ├── Password / Google OAuth
+    │   ├── Access Token (JWT – short lived)
+    │   └── Refresh Token (hashed & stored)
+    │
+    ├── Token Refresh
+    │   ├── Validate refresh token
+    │   ├── Rotate refresh token
+    │   └── Issue new access token
+    │
+    ├── Password Reset
+    │   ├── Reset token generated
+    │   ├── Hashed token stored
+    │   ├── Email with reset link
+    │   └── Password updated securely
+    │
+    └── Logout
+        └── Refresh token invalidated
+
+User
+└── Upload File
+    ├── MongoDB (File Metadata)
+    │   ├── fileName
+    │   ├── fileType
+    │   ├── size
+    │   └── userId
+    │
+    ├── Content DB (Extracted Text)
+    │   └── Full extracted content
+    │
+    ├── Chunking Engine
+    │   ├── Text → paragraph-based chunks
+    │   └── Code → function/class-based chunks
+    │
+    ├── Embedding Service
+    │   └── Converts chunks → vectors (384-dim)
+    │
+    └── Qdrant Vector DB
+        ├── Vector (embedding)
+        ├── Payload:
+        │   ├── userId
+        │   ├── fileId
+        │   ├── fileName
+        │   ├── text
+        │   ├── chunkIndex
+        │   └── chunkType
+        └── Indexed for semantic search
+
+User
+└── Ask Question
+    ├── Question → Embedding
+    │
+    ├── Qdrant Vector Search
+    │   ├── Cosine similarity
+    │   ├── userId filter
+    │   └── Score threshold
+    │
+    ├── Context Builder
+    │   ├── Top relevant chunks
+    │   └── Source labeling
+    │
+    ├── Prompt Builder
+    │   ├── Safe system prompt
+    │   └── Context injection
+    │
+    ├── LLM (Groq – Llama 3.1)
+    │
+    └── Response
+        ├── AI Answer
+        └── Source references
+
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## Tech Stack
 
-# watch mode
-$ npm run start:dev
+- **Framework**: NestJS (TypeScript)
+- **Auth**: JWT + OAuth
+- **Databases**:
+  - MongoDB (User, File metadata)
+  - MongoDB (Content source – separate DB)
+- **Vector DB**: Qdrant Cloud
+- **Embeddings**: Sentence Transformers
+- **LLM**: Groq Cloud
+- **Email**: Brevo (SMTP / API)
+- **Rate Limiting**: NestJS Throttler
 
-# production mode
-$ npm run start:prod
+---
+
+## Environment Variables
+
+```env
+# Server
+PORT=3000
+NODE_ENV=development
+
+# MongoDB
+USER_DB_URI=
+CONTENT_DB_URI=
+
+# JWT
+JWT_SECRET=
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Google OAuth
+GOOGLE_CLIENT_ID=
+
+# Email (Brevo)
+MAIL_FROM=
+BREVO_API_KEY=
+
+# Embeddings
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# Qdrant
+QDRANT_URL=
+QDRANT_API_KEY=
+QDRANT_COLLECTION=file_chunks
+
+# Groq LLM
+GROQ_API_KEY=
+GROQ_MODEL=llama-3.1-8b-instant
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

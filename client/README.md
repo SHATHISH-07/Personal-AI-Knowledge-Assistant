@@ -17,9 +17,9 @@ If you are developing a production application, we recommend updating the config
 
 ```js
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       // Other configs...
 
@@ -34,40 +34,139 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       // Other configs...
       // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
+      reactX.configs["recommended-typescript"],
       // Enable lint rules for React DOM
       reactDom.configs.recommended,
     ],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
       // other options...
     },
   },
-])
+]);
+```
+
+```text
+openluma-frontend/
+│
+├── public/
+│   ├── logo.svg
+│   └── favicon.ico
+│
+├── src/
+│   │
+│   ├── api/                     # All backend communication
+│   │   ├── axios.ts
+│   │   ├── auth.api.ts
+│   │   ├── files.api.ts
+│   │   └── ask.api.ts
+│   │
+│   ├── components/
+│   │   ├── ui/                  # shadcn generated components
+│   │   │   ├── button.tsx
+│   │   │   ├── input.tsx
+│   │   │   └── card.tsx
+│   │   │
+│   │   ├── layout/              # App shell
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── Topbar.tsx
+│   │   │   └── AppLayout.tsx
+│   │   │
+│   │   ├── auth/                # Auth-related UI
+│   │   │   ├── LoginForm.tsx
+│   │   │   ├── RegisterForm.tsx
+│   │   │   └── ProtectedRoute.tsx
+│   │   │
+│   │   ├── files/               # Knowledge base UI
+│   │   │   ├── FileTable.tsx
+│   │   │   ├── FileRow.tsx
+│   │   │   ├── FileActions.tsx
+│   │   │   └── FileDetail.tsx
+│   │   │
+│   │   ├── upload/              # Upload & processing
+│   │   │   ├── UploadDropzone.tsx
+│   │   │   └── UploadProgress.tsx
+│   │   │
+│   │   ├── chat/                # Ask AI (stateless)
+│   │   │   ├── ChatInput.tsx
+│   │   │   ├── ChatMessage.tsx
+│   │   │   ├── ChatList.tsx
+│   │   │   └── SourcesPanel.tsx
+│   │   │
+│   │   └── common/              # Shared components
+│   │       ├── Loader.tsx
+│   │       ├── EmptyState.tsx
+│   │       └── ErrorState.tsx
+│   │
+│   ├── pages/                   # Route-level pages
+│   │   ├── Login.tsx
+│   │   ├── Register.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── Files.tsx
+│   │   ├── Upload.tsx
+│   │   ├── Ask.tsx
+│   │   └── NotFound.tsx
+│   │
+│   ├── store/                   # Global state (lightweight)
+│   │   ├── auth.store.ts
+│   │   ├── file.store.ts
+│   │   └── chat.store.ts
+│   │
+│   ├── hooks/                   # Custom hooks
+│   │   ├── useAuth.ts
+│   │   ├── useFiles.ts
+│   │   └── useRecentQuestions.ts
+│   │
+│   ├── utils/                   # Helpers & constants
+│   │   ├── formatDate.ts
+│   │   ├── fileUtils.ts
+│   │   └── storage.ts
+│   │
+│   ├── types/                   # TypeScript types
+│   │   ├── auth.types.ts
+│   │   ├── file.types.ts
+│   │   └── chat.types.ts
+│   │
+│   ├── routes/                  # Routing config
+│   │   └── AppRoutes.tsx
+│   │
+│   ├── styles/
+│   │   └── globals.css
+│   │
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+│
+├── .env
+├── .env.production
+├── tailwind.config.js
+├── tsconfig.json
+├── vite.config.ts
+└── package.json
 ```

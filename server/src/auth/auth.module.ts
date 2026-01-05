@@ -8,6 +8,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { EmailVerificationModule } from 'src/email-verification/email-verification.module';
 import { MailModule } from 'src/mail/mail.module';
 import { PasswordResetModule } from 'src/password-reset/password-reset.module';
+import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { PasswordResetModule } from 'src/password-reset/password-reset.module';
   ],
 
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy]
+  providers: [AuthService, JwtStrategy, GoogleStrategy]
 })
 export class AuthModule { }

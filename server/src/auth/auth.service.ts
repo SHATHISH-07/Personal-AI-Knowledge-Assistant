@@ -123,12 +123,7 @@ export class AuthService {
             expiresAt,
         });
 
-        const { accessToken, refreshToken } =
-            await this.generateTokens(newUser._id.toString(), newUser.email);
-
-        await this.saveRefreshToken(newUser._id.toString(), refreshToken);
-
-        return { accessToken, refreshToken };
+        return { message: 'Registration successful. Please verify your email.' };
 
     }
 
@@ -206,16 +201,16 @@ export class AuthService {
 
         const user = await this.userModule.findOne({ email });
         if (!user || !user.passwordHash) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         if (!user.isEmailVerified) {
-            throw new UnauthorizedException('Please verify your email');
+            throw new UnauthorizedException("Please verify your email");
         }
 
         const { accessToken, refreshToken } =
@@ -226,34 +221,28 @@ export class AuthService {
         return { accessToken, refreshToken };
     }
 
-    async googleLogin(idToken: string) {
-        const ticket = await this.googleClient.verifyIdToken({
-            idToken,
-            audience: this.configService.get<string>('GOOGLE_CLIENT_ID'),
-        });
-
-        const payload = ticket.getPayload();
-        if (!payload) {
-            throw new BadRequestException('Invalid Google token');
-        }
-
-        const { email, sub: googleId, picture, name } = payload;
+    async handleGoogleUser(profile: any) {
+        const email = profile.emails[0].value;
+        const googleId = profile.id;
+        const name = profile.displayName;
+        const picture = profile.photos?.[0]?.value;
 
         let user = await this.userModule.findOne({ email });
-
-        if (user && user.googleId !== googleId) {
-            throw new BadRequestException('Google account already in use');
-        }
 
         if (!user) {
             user = await this.userModule.create({
                 email,
                 googleId,
-                profilePictureUrl: picture,
                 name,
-                authProvider: 'google',
+                profilePictureUrl: picture,
+                authProvider: "google",
                 isEmailVerified: true,
             });
+
+            await this.mailService.sendWelcomeEmail(
+                user.email,
+                user.name,
+            );
         }
 
         const { accessToken, refreshToken } =
@@ -263,6 +252,7 @@ export class AuthService {
 
         return { accessToken, refreshToken };
     }
+
 
     async logout(userId: string) {
         await this.userModule.updateOne(

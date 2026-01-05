@@ -4,30 +4,30 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
-  private transporter;
+    private transporter;
 
-  constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      host: this.configService.get('BREVO_SMTP_HOST'),
-      port: this.configService.get<number>('BREVO_SMTP_PORT'),
-      secure: false,
-      auth: {
-        user: this.configService.get('BREVO_SMTP_USER'),
-        pass: this.configService.get('BREVO_SMTP_PASS'),
-      },
-    });
-  }
+    constructor(private configService: ConfigService) {
+        this.transporter = nodemailer.createTransport({
+            host: this.configService.get('BREVO_SMTP_HOST'),
+            port: this.configService.get<number>('BREVO_SMTP_PORT'),
+            secure: false,
+            auth: {
+                user: this.configService.get('BREVO_SMTP_USER'),
+                pass: this.configService.get('BREVO_SMTP_PASS'),
+            },
+        });
+    }
 
-  async sendVerificationEmail(email: string, token: string) {
-    const verifyUrl = `${this.configService.get(
-      'FRONTEND_URL',
-    )}/auth/verify-email?token=${token}`;
+    async sendVerificationEmail(email: string, token: string) {
+        const verifyUrl = `${this.configService.get(
+            'BACKEND_URL',
+        )}/auth/verify-email?token=${token}`;
 
-    await this.transporter.sendMail({
-      from: this.configService.get('MAIL_FROM'),
-      to: email,
-      subject: 'Verify your email',
-      html: `
+        await this.transporter.sendMail({
+            from: this.configService.get('MAIL_FROM'),
+            to: email,
+            subject: 'Verify your email',
+            html: `
     <div
         style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
         <div style="background-color: #f4f6f8; padding: 40px 20px;">
@@ -93,36 +93,32 @@ export class MailService {
     </div>
 `
 
-    });
-  }
+        });
+    }
 
-  async sendWelcomeEmail(email: string, name?: string) {
+    async sendWelcomeEmail(email: string, name?: string) {
 
-    const redirectUrl = `${this.configService.get(
-      'FRONTEND_URL',
-    )}/dashboard`;
+        const redirectUrl = `${this.configService.get(
+            'FRONTEND_URL',
+        )}/dashboard`;
 
-    await this.transporter.sendMail({
-      from: this.configService.get('MAIL_FROM'),
-      to: email,
-      subject: 'Welcome to OpenLuma ',
-      html: `
+        await this.transporter.sendMail({
+            from: this.configService.get('MAIL_FROM'),
+            to: email,
+            subject: 'Welcome to OpenLuma ',
+            html: `
        <div
         style="background-color: #f9fafb; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
 
-        <div
-            style="background-color: #ffffff; max-width: 600px; margin: auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center;">
+       <div style="background-color: #ffffff; max-width: 600px; margin: auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center;">
+    
+    <div style="margin-bottom: 40px; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
+        <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767441302/Gemini_Generated_Image_kphguxkphguxkphg-removebg-preview_1_oexjzs.png" width="400" style="display: inline-block; border: 0; max-width: 100%; height: auto;">
+    </div>
 
-            <div
-                style="margin-bottom: 40px; text-align: left; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; ">
-                <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767441302/Gemini_Generated_Image_kphguxkphguxkphg-removebg-preview_1_oexjzs.png"
-                    alt="OpenLuma Logo" width="400"
-                    style="display: block; border: 0; max-width: 100%; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </div>
-
-            <h1 style="color: #111827; font-size: 32px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -0.5px;">
-                Welcome aboard${name ? `, ${name}` : ''}.
-            </h1>
+    <h1 style="color: #111827; font-size: 32px; font-weight: 800; margin: 0 0 20px 0;">
+        Welcome aboard${name ? `, ${name}` : ''}.
+    </h1>
 
             <p style="color: #374151; font-size: 18px; line-height: 1.6; margin-top: 0;">
                 Your account is verified. OpenLuma is ready to turn your documents into an intelligent knowledge engine.
@@ -136,7 +132,7 @@ export class MailService {
                         </td>
                         <td valign="top"
                             style="padding: 15px 0 15px 10px; color: #374151; font-size: 16px; line-height: 1.6; border-bottom: 1px solid #f0f0f0;">
-                            <strong>Upload Knowledge:</strong> Connect your documents, PDFs, or Notion pages.
+                            <strong>Upload Knowledge:</strong> Connect your Code files and Text files
                         </td>
                     </tr>
                     <tr>
@@ -179,25 +175,25 @@ export class MailService {
         </div>
     </div>
       `
-    });
-  }
+        });
+    }
 
-  async sendPasswordResetEmail(email: string, rawToken: string) {
-    const resetUrl = `${this.configService.get(
-      'FRONTEND_URL',
-    )
-      }/reset-password?token=${rawToken}`;
+    async sendPasswordResetEmail(email: string, rawToken: string) {
+        const resetUrl = `${this.configService.get(
+            'BACKEND_URL',
+        )
+            }/reset-password?token=${rawToken}`;
 
-    await this.transporter.sendMail({
-      from: this.configService.get('MAIL_FROM'),
-      to: email,
-      subject: 'Reset your OpenLuma password',
-      html: `
+        await this.transporter.sendMail({
+            from: this.configService.get('MAIL_FROM'),
+            to: email,
+            subject: 'Reset your OpenLuma password',
+            html: `
       <div
         style="background-color: #f9fafb; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
 
         <div
-            style="background-color: #ffffff; max-width: 600px; margin: auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);  display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            style="background-color: #ffffff; max-width: 600px; margin: auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);  display: flex; flex-direction: row; justify-content: center; align-items: center;">
 
             <div style="margin-bottom: 40px; text-align: left; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
                 <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767441302/Gemini_Generated_Image_kphguxkphguxkphg-removebg-preview_1_oexjzs.png"
@@ -243,8 +239,8 @@ export class MailService {
 
     </div>
     `,
-    });
-  }
+        });
+    }
 
 
 }

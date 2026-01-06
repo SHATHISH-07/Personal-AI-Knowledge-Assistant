@@ -4,9 +4,9 @@ import LandingPage from "@/pages/LandingPage";
 import { Spinner } from "@/components/ui/spinner";
 
 const RootRoute = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
 
   return isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />;
 };

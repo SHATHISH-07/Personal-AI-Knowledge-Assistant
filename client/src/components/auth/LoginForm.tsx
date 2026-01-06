@@ -23,13 +23,14 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <Input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
+        className="w-full h-12 text-base font-semibold"
       />
 
       <Input
@@ -38,9 +39,13 @@ const LoginForm = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        className="w-full h-12 text-base font-semibold"
       />
 
-      <Button className="w-full" disabled={loading}>
+      <Button
+        className="w-full h-12 text-base font-semibold"
+        disabled={loading}
+      >
         Login
       </Button>
     </form>

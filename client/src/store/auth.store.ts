@@ -13,7 +13,7 @@ interface AuthState {
     logoutUser: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
     isInitialized: false,
@@ -21,8 +21,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
 
     initializeAuth: async () => {
-        if (get().isInitialized) return;
-
         set({ isLoading: true });
 
         try {
@@ -66,6 +64,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             user: null,
             isAuthenticated: false,
             isInitialized: true,
+            isLoading: false
         });
     },
 }));

@@ -26,31 +26,37 @@ const RegisterForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
-        type="name"
-        placeholder="Name"
+        type="text"
+        placeholder="Full name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
+        className="h-11"
       />
 
       <Input
         type="email"
-        placeholder="Email"
+        placeholder="Email address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
+        className="h-11"
       />
 
       <Input
         type="password"
-        placeholder="Password"
+        placeholder="Create a password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
+        className="h-11"
       />
 
-      <Button className="w-full" disabled={loading}>
-        Sign up
+      <Button
+        className="w-full h-12 text-base font-semibold"
+        disabled={loading}
+      >
+        {loading ? "Creating account..." : "Create account"}
       </Button>
     </form>
   );

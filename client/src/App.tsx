@@ -9,6 +9,20 @@ function App() {
     initializeAuth();
   }, [initializeAuth]);
 
+  useEffect(() => {
+    const onFocus = () => {
+      useAuthStore.getState().initializeAuth();
+    };
+
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("popstate", onFocus);
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("popstate", onFocus);
+    };
+  }, []);
+
   return <AppRoutes />;
 }
 

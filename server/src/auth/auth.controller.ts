@@ -15,28 +15,28 @@ import type { Response } from "express";
 @Controller('auth')
 export class AuthController {
 
-    constructor(private readonly authService: AuthService,
-        private configService: ConfigService
-    ) { }
+  constructor(private readonly authService: AuthService,
+    private configService: ConfigService
+  ) { }
 
-    @Post('register')
-    register(@Body() registerDto: RegisterDto) {
-        return this.authService.register(registerDto);
-    }
+  @Post('register')
+  register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
 
-    @Get("verify-email")
-    async verifyEmail(
-        @Query("token") token: string,
-        @Res() res: Response,
-    ) {
-        try {
-            await this.authService.verifyEmail(token);
+  @Get("verify-email")
+  async verifyEmail(
+    @Query("token") token: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.authService.verifyEmail(token);
 
-            const loginUrl = `${this.configService.get(
-                "FRONTEND_URL",
-            )}/login?verified=true`;
+      const loginUrl = `${this.configService.get(
+        "FRONTEND_URL",
+      )}/login?verified=true`;
 
-            return res.send(`
+      return res.send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,8 +96,8 @@ export class AuthController {
 </body>
 </html>
       `);
-        } catch (err) {
-            return res.status(400).send(`
+    } catch (err) {
+      return res.status(400).send(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -109,94 +109,109 @@ export class AuthController {
 </body>
 </html>
       `);
-        }
     }
+  }
 
-    @Throttle({
-        default: {
-            ttl: 300,
-            limit: 5
-        }
-    })
-    @Post('resend-verification')
-    resendVerification(@Body() dto: ResendVerificationDto) {
-        return this.authService.resendVerification(dto.email);
+  @Throttle({
+    default: {
+      ttl: 300,
+      limit: 5
     }
+  })
+  @Post('resend-verification')
+  resendVerification(@Body() dto: ResendVerificationDto) {
+    return this.authService.resendVerification(dto.email);
+  }
 
-    @Get("google")
-    @UseGuards(AuthGuard("google"))
-    async googleAuth() {
-    }
+  @Get("google")
+  @UseGuards(AuthGuard("google"))
+  async googleAuth() {
+  }
 
-    @Get("google/callback")
-    @UseGuards(AuthGuard("google"))
-    async googleCallback(@Req() req, @Res() res) {
+  @Get("google/callback")
+  @UseGuards(AuthGuard("google"))
+  async googleCallback(@Req() req, @Res() res) {
 
-        const redirectUrl = `${this.configService.get(
-            'FRONTEND_URL',
-        )}/dashboard`;
+    const redirectUrl = `${this.configService.get(
+      'FRONTEND_URL',
+    )}/dashboard`;
 
-        const { accessToken, refreshToken } =
-            await this.authService.handleGoogleUser(req.user);
+    const { accessToken, refreshToken } =
+      await this.authService.handleGoogleUser(req.user);
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false,
-        });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false,
-        });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-        return res.redirect(redirectUrl);
-    }
+    return res.redirect(redirectUrl);
+  }
 
-    @Post("login")
-    async login(
-        @Body() loginDto: LoginDto,
-        @Res({ passthrough: true }) res: Response,
-    ) {
-        const { accessToken, refreshToken } =
-            await this.authService.login(loginDto);
+  @Post("login")
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.login(loginDto);
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false,
-        });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: false,
-        });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-        return { message: "Login successful" };
-    }
+    return { message: "Login successful" };
+  }
 
 
-    @Post('refresh')
-    async refresh(@Body() dto: RefreshTokenDto) {
-        return this.authService.refreshTokens(dto.refreshToken);
-    }
+  @Post('refresh')
+  async refresh(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshTokens(dto.refreshToken);
+  }
 
-    @Post('forgot-password')
-    async forgotPassword(@Body() dto: ForgotPasswordDto) {
-        return this.authService.forgotPassword(dto.email);
-    }
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto.email);
+  }
 
-    @Post('reset-password')
-    async resetPassword(@Body() dto: ResetPasswordDto) {
-        return this.authService.resetPassword(dto);
-    }
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
+  }
 
-    @Post('logout')
-    @UseGuards(JwtAuthGuard)
-    logout(@Req() req) {
-        return this.authService.logout(req.user.userId);
-    }
+  @Post("logout")
+  @UseGuards(JwtAuthGuard)
+  logout(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      path: "/",
+    });
 
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return this.authService.logout(req.user.userId);
+  }
 }

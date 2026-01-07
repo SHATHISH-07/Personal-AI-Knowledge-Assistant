@@ -180,7 +180,7 @@ export class MailService {
 
     async sendPasswordResetEmail(email: string, rawToken: string) {
         const resetUrl = `${this.configService.get(
-            'BACKEND_URL',
+            'FRONTEND_URL',
         )
             }/reset-password?token=${rawToken}`;
 
@@ -189,55 +189,63 @@ export class MailService {
             to: email,
             subject: 'Reset your OpenLuma password',
             html: `
-      <div
-        style="background-color: #f9fafb; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; max-width: 600px; margin: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden;">
+                    <tr>
+                        <td style="padding: 40px;">
+                            
+                            <div style="text-align: left; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 30px;">
+                                <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767441302/Gemini_Generated_Image_kphguxkphguxkphg-removebg-preview_1_oexjzs.png"
+                                    alt="OpenLuma" width="400"
+                                    style="display: block; border: 0; max-width: 100%; height: auto;">
+                            </div>
 
-        <div
-            style="background-color: #ffffff; max-width: 600px; margin: auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);  display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                            <h1 style="color: #111827; font-size: 24px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -0.5px; text-align: left;">
+                                Reset your password
+                            </h1>
 
-            <div style="margin-bottom: 40px; text-align: left; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
-                <img src="https://res.cloudinary.com/dylmrhy5h/image/upload/v1767441302/Gemini_Generated_Image_kphguxkphguxkphg-removebg-preview_1_oexjzs.png"
-                    alt="OpenLuma Logo" width="400"
-                    style="display: block; border: 0; max-width: 100%; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
-            </div>
+                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 10px 0; text-align: left;">
+                                We received a request to reset your <strong>OpenLuma</strong> password.
+                            </p>
+                            
+                            <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0; text-align: left;">
+                                Click the button below to set a new password.
+                            </p>
 
-            <h1 style="color: #111827; font-size: 32px; font-weight: 800; margin: 0 0 20px 0; letter-spacing: -0.5px;">
-                Reset your password.
-            </h1>
+                            <div style="text-align: left; margin-bottom: 40px;">
+                                <a href="${resetUrl}"
+                                       style="background-color: #111827; color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 700; display: inline-block; mso-padding-alt:0;">
+                                       Reset Password
+                                    </a>
+                                </div>
 
-            <p style="color: #374151; font-size: 18px; line-height: 1.6; margin-top: 0;">
-                We received a request to reset your <strong>OpenLuma</strong> password.
-            </p>
+                            <div style="border-top: 1px solid #f0f0f0; padding-top: 20px;">
+                                <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 0 0 10px 0; text-align: left;">
+                                    This link will expire in <strong>1 hour</strong>.
+                                </p>
+                                <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 0; text-align: left;">
+                                    If you didn’t request a password reset, you can safely ignore this email.
+                                </p>
+                            </div>
 
-            <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-                Click the button below to set a new password.
-            </p>
-
-            <div style="margin: 30px 0;">
-                <a href="${resetUrl}"
-                    style="background-color: #111827; color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: 700; display: inline-block;">
-                    Reset Password
-                </a>
-            </div>
-            <div style="border-top: 1px solid #f0f0f0; margin-top: 40px; padding-top: 20px; display:block;">
-                <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 0 0 10px 0;">
-                    This link will expire in <strong>1 hour</strong>.
-                </p>
-
-                <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 0;">
-                    If you didn’t request a password reset, you can safely ignore this email.
-                </p>
-            </div>
-
-            <p style="margin-top: 40px; font-size: 12px; color: #9ca3af; text-align: center;">
-                &copy; ${new Date().getFullYear()} OpenLuma. All rights reserved.
-            </p>
-
-        </div>
-    </div>
-
-
-    </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td style="padding: 0 40px 40px 40px; text-align: center;">
+                             <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+                                &copy; ${new Date().getFullYear()} OpenLuma. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+        </tr>
+    </table>
     `,
         });
     }

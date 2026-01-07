@@ -11,6 +11,8 @@ import NotFound from "@/pages/NotFound";
 import RootRoute from "./RootRoute";
 import AppLayout from "@/components/layout/AppLayout";
 import VerifyEmail from "@/pages/VerifyEmail";
+import ResetPassword from "@/pages/ResetPassword";
+import ForgotPassword from "@/pages/ForgotPassword";
 
 const AppRoutes = () => {
   return (
@@ -20,10 +22,12 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/" element={<RootRoute />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Protected routes */}
       <Route
-        path="/dashboard"
+        path="/overview"
         element={
           <ProtectedRoute>
             <AppLayout>
@@ -32,7 +36,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/files"
         element={
@@ -43,7 +46,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/upload"
         element={
@@ -54,7 +56,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/ask"
         element={
@@ -65,7 +66,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

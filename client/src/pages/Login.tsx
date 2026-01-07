@@ -4,7 +4,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import logo from "/assets/favicon.ico"; // Assuming you want the logo here too
+import logo from "/assets/favicon.ico";
 
 const Login = () => {
   const containerRef = useRef(null);

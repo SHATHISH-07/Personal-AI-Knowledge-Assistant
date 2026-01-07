@@ -3,16 +3,19 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { File, FileSchema } from 'src/files/schemas/file.schema';
+import { VectorDbService } from 'src/vector-db/vector-db.service';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
-            { name: User.name, schema: UserSchema }
-        ], 'USER_DB')
+            { name: User.name, schema: UserSchema },
+            { name: File.name, schema: FileSchema }
+        ], 'USER_DB'),
     ],
 
     controllers: [UsersController],
-    providers: [UsersService],
+    providers: [UsersService, VectorDbService],
     exports: [
         MongooseModule
     ],

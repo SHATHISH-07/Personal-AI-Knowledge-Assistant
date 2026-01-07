@@ -16,7 +16,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
       <div className="flex flex-1 flex-col">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 text-center overflow-y-auto p-10 ">
+        <main className="flex-1 text-center overflow-y-auto p-5 ">
           {children}
         </main>
       </div>

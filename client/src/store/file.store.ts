@@ -24,7 +24,7 @@ export const useFileStore = create<FileState>((set, get) => ({
 
     upload: async (file) => {
         await uploadFile(file);
-        await get().fetchFiles(); // refresh list
+        await get().fetchFiles();
     },
 
     archive: async (fileId) => {

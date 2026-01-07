@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link
 import { Loader2 } from "lucide-react";
 
 const LoginForm = () => {
@@ -17,7 +17,7 @@ const LoginForm = () => {
     setLoading(true);
     try {
       await loginUser(email, password);
-      navigate("/dashboard");
+      navigate("/overview");
     } finally {
       setLoading(false);
     }
@@ -35,14 +35,25 @@ const LoginForm = () => {
           className="w-full h-12 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
         />
 
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full h-12 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
-        />
+        <div className="space-y-2">
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full h-12 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
+          />
+          {/* Forgot Password Link */}
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-zinc-400 hover:text-white transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
       </div>
 
       <Button

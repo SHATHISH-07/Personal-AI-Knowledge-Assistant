@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Response } from 'express';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -35,7 +36,7 @@ export class AuthService {
     private async generateTokens(userId: string, email: string) {
         const accessToken = this.jwtService.sign(
             { sub: userId, email },
-            { expiresIn: '1d' },
+            { expiresIn: '30m' },
         )
 
         const refreshToken = this.jwtService.sign(
@@ -55,7 +56,7 @@ export class AuthService {
         );
     }
 
-    async refreshTokens(refreshToken: string) {
+    async refreshTokens(refreshToken: string, res: Response) {
         try {
             const payload = this.jwtService.verify(refreshToken);
 
@@ -73,19 +74,31 @@ export class AuthService {
                 throw new UnauthorizedException();
             }
 
-            const { accessToken, refreshToken: newRefreshToken } =
-                await this.generateTokens(user._id.toString(), user.email);
+            const {
+                accessToken,
+                refreshToken: newRefreshToken,
+            } = await this.generateTokens(user._id.toString(), user.email);
 
             await this.saveRefreshToken(user._id.toString(), newRefreshToken);
 
-            return {
-                accessToken,
-                refreshToken: newRefreshToken,
-            };
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false,
+            });
+
+            res.cookie("refreshToken", newRefreshToken, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: false,
+            });
+
+            return { success: true };
         } catch {
-            throw new UnauthorizedException('Invalid refresh token');
+            throw new UnauthorizedException("Invalid refresh token");
         }
     }
+
 
     async register(registerDto: RegisterDto) {
         const { name, email, password } = registerDto;

@@ -1,5 +1,6 @@
 import type { User } from "@/types/auth.type";
 import api from "./axios";
+import type { DashboardSummary } from "@/types/dashboard.type";
 
 export const register = (data: {
     name: string;
@@ -19,6 +20,11 @@ export const login = (data: {
 export const getMe = () => {
     return api.get<User>("/users/me");
 };
+
+export const getSummary = () => {
+    return api.get<DashboardSummary>("/users/dashboard/summary");
+};
+
 
 export const logout = () => {
     return api.post("/auth/logout");
@@ -40,5 +46,8 @@ export const resetPassword = (data: {
     token: string;
     newPassword: string;
 }) => {
-    return api.post("/auth/reset-password", data);
+    return api.post("/auth/reset-password", {
+        token: data.token,
+        password: data.newPassword
+    });
 };

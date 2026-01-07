@@ -14,7 +14,7 @@ const Topbar = ({ onMenuClick }: TopbarProps) => {
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuClick}
-            className="md:hidden p-2 -ml-2 rounded-md text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
+            className="md:hidden p-2 -ml-2 rounded-md text-zinc-600 dark:text-zinc-300 cursor-w-resize hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors"
           >
             <PanelLeft className="w-6 h-6" />
           </button>

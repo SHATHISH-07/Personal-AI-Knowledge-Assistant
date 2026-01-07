@@ -103,4 +103,25 @@ export class VectorDbService implements OnModuleInit {
     async health() {
         await this.client.getCollections();
     }
+
+    async countByUser(userId: string): Promise<number> {
+
+        const collectionName = this.config.get<string>('QDRANT_COLLECTION')!;
+
+        const result = await this.client.count(collectionName, {
+            filter: {
+                must: [
+                    {
+                        key: "userId",
+                        match: {
+                            value: userId,
+                        },
+                    },
+                ],
+            },
+        });
+
+        return result.count ?? 0;
+    }
+
 }

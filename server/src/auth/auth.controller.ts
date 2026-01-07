@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { ResendVerificationDto } from './dto/resendVerification.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ForgotPasswordDto } from './dto/forgotPassword.dto';
@@ -33,11 +32,12 @@ export class AuthController {
       await this.authService.verifyEmail(token);
 
       const loginUrl = `${this.configService.get(
-        "FRONTEND_URL",
-      )}/login?verified=true`;
+        'FRONTEND_URL',
+      )
+        }/login?emailVerified=true`;
 
-      return res.send(`
-<!DOCTYPE html>
+
+      return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -46,69 +46,144 @@ export class AuthController {
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #020617;
-      color: #e5e7eb;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+      background-color: #121212; /* Theme Background */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #e4e4e7;
     }
     .card {
-      background: #020617;
-      border: 1px solid #1e293b;
-      padding: 32px;
-      border-radius: 12px;
-      max-width: 420px;
+      background-color: #181818; /* Theme Surface */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      background-color: rgba(34, 197, 94, 0.1); /* Green tint */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px auto;
+    }
+    .icon {
+      font-size: 32px;
     }
     h1 {
-      color: #22c55e;
-      margin-bottom: 12px;
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
     }
     p {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 24px;
+      color: #a1a1aa; /* Zinc-400 */
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 0 0 32px 0;
     }
-    a {
+    .btn {
       display: inline-block;
-      padding: 10px 20px;
-      background: #2563eb;
-      color: white;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 24px;
+      background-color: #ffffff; /* Primary Button White */
+      color: #000000; /* Primary Button Text Black */
       text-decoration: none;
       border-radius: 8px;
+      font-weight: 600;
       font-size: 14px;
+      transition: background-color 0.2s;
     }
-    a:hover {
-      background: #1d4ed8;
+    .btn:hover {
+      background-color: #e4e4e7;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>✅ Email Verified</h1>
-    <p>Your email has been successfully verified.<br/>
-    You can now log in to your OpenLuma account.</p>
-    <a href="${loginUrl}">Return to Login</a>
+    <div class="icon-circle">
+      <span class="icon">✅</span>
+    </div>
+    <h1>Email Verified</h1>
+    <p>Your email has been successfully verified.<br/>You can now log in to your account.</p>
+    <a href="${loginUrl}"class="btn">Return to Login</a>
   </div>
 </body>
-</html>
-      `);
+</html>`);
     } catch (err) {
       return res.status(400).send(`
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Verification Failed | OpenLuma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #121212;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #e4e4e7;
+    }
+    .card {
+      background-color: #181818;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      background-color: rgba(239, 68, 68, 0.1); /* Red tint */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px auto;
+    }
+    .icon {
+      font-size: 32px;
+    }
+    h1 {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+    }
+    p {
+      color: #a1a1aa;
+      font-size: 15px;
+      line-height: 1.5;
+      margin: 0;
+    }
+  </style>
 </head>
-<body style="background:#020617;color:#e5e7eb;font-family:sans-serif;text-align:center;padding:40px">
-  <h1>❌ Verification Failed</h1>
-  <p>This verification link is invalid or expired.</p>
+<body>
+  <div class="card">
+    <div class="icon-circle">
+      <span class="icon">❌</span>
+    </div>
+    <h1>Verification Failed</h1>
+    <p>This verification link is invalid or has expired.<br/>Please try signing up again or contact support.</p>
+  </div>
 </body>
-</html>
-      `);
+</html>`);
     }
   }
 
@@ -134,7 +209,8 @@ export class AuthController {
 
     const redirectUrl = `${this.configService.get(
       'FRONTEND_URL',
-    )}/dashboard`;
+    )
+      }/overview`;
 
     const { accessToken, refreshToken } =
       await this.authService.handleGoogleUser(req.user);
@@ -179,9 +255,14 @@ export class AuthController {
 
 
   @Post('refresh')
-  async refresh(@Body() dto: RefreshTokenDto) {
-    return this.authService.refreshTokens(dto.refreshToken);
+  async refresh(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const refreshToken = req.cookies.refreshToken;
+    return this.authService.refreshTokens(refreshToken, res);
   }
+
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {

@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard,
   FileText,
   Upload,
   MessageSquare,
@@ -8,6 +7,7 @@ import {
   X,
   ChevronsUpDown,
   LogOut,
+  LayoutGrid,
 } from "lucide-react";
 import favicon from "/assets/favicon.ico";
 import { useState, useEffect } from "react";
@@ -15,12 +15,13 @@ import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTheme } from "../theme/useTheme";
+import { useAskStore } from "@/store/chat.store";
 
 const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/ask", label: "Ask AI", icon: MessageSquare },
   { to: "/files", label: "Files", icon: FileText },
   { to: "/upload", label: "Upload", icon: Upload },
-  { to: "/ask", label: "Ask AI", icon: MessageSquare },
+  { to: "/overview", label: "Overview", icon: LayoutGrid },
 ];
 
 interface SidebarProps {
@@ -33,6 +34,8 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
   const { user, logoutUser } = useAuth();
 
   const { setTheme } = useTheme();
+
+  const { recentQuestions, setInputPrompt } = useAskStore();
 
   useEffect(() => {
     if (mobileOpen) {
@@ -56,7 +59,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
           "fixed md:sticky top-0 left-0 z-50 h-screen transition-all duration-300 ease-in-out border-r flex flex-col",
           collapsed
             ? "w-20 bg-zinc-50 dark:bg-[#212121]"
-            : "w-72 bg-zinc-100 dark:bg-[#181818]",
+            : "w-64 bg-zinc-50 dark:bg-[#181818]",
           mobileOpen
             ? "translate-x-0 w-64"
             : "-translate-x-full md:translate-x-0"
@@ -117,7 +120,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
         </div>
 
         {/* NAV */}
-        <nav className="flex-1 flex flex-col gap-2 p-3 overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 flex flex-col p-3 overflow-y-auto overflow-x-hidden">
           {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -132,7 +135,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                     ? "justify-center h-12 w-12 mx-auto"
                     : "h-11 px-3 gap-3",
                   isActive
-                    ? "bg-zinc-200 text-gray-800 dark:bg-gray-500/10 dark:text-gray-200 font-medium"
+                    ? " text-gray-800 dark:text-gray-200 font-medium"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-100"
                 )
               }
@@ -150,15 +153,39 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                   />
 
                   {!collapsed && <span className="truncate">{label}</span>}
-
-                  {isActive && !collapsed && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#717171] rounded-l-full" />
-                  )}
                 </>
               )}
             </NavLink>
           ))}
         </nav>
+
+        {/* RECENT QUESTIONS */}
+        {!collapsed && recentQuestions.length > 0 && (
+          <div className="px-3 pb-3">
+            <p className="mb-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+              Recent Questions
+            </p>
+
+            <div className="space-y-1">
+              {recentQuestions.map((q, i) => (
+                <NavLink
+                  key={i}
+                  to="/ask"
+                  onClick={() => {
+                    setMobileOpen(false); // Close mobile menu
+                    setInputPrompt(q); // Send text to input
+                  }}
+                  className="block truncate rounded-md px-2 py-1.5 text-xs
+                     text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900
+                     dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100"
+                  title={q}
+                >
+                  {q}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* FOOTER */}
         <div className="p-4 ">

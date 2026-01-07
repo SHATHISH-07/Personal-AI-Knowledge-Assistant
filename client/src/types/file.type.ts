@@ -5,10 +5,10 @@ export interface FileItem {
     userId: string;
     fileName: string;
     fileType: FileType;
-    language?: string;
     size: number;
     isArchived: boolean;
-    uploadedAt: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface FileUploadResponse {

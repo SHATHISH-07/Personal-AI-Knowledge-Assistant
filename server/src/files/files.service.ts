@@ -88,6 +88,12 @@ export class FilesService {
         return file;
     }
 
+    async getFileByName(userId: string, fileName: string) {
+        const file = await this.fileModel.findOne({ userId, fileName });
+        if (!file) throw new NotFoundException('File not found');
+        return file;
+    }
+
     async archiveFile(userId: string, fileId: string) {
         return this.fileModel.updateOne(
             { _id: fileId, userId },

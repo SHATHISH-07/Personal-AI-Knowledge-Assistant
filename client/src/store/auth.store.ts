@@ -21,9 +21,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
 
     initializeAuth: async () => {
-        set({ isLoading: true });
-
         if (get().isInitialized) return;
+
+        set({ isLoading: true });
 
         try {
             const res = await getMe();

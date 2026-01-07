@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { resendVerification } from "@/api/auth.api";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import clsx from "clsx";
 
 const RESEND_DELAY = 5 * 60;
 const STORAGE_KEY = "openluma_resend_at";
@@ -12,6 +15,7 @@ const VerifyEmail = () => {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     const lastSent = localStorage.getItem(STORAGE_KEY);
@@ -21,12 +25,6 @@ const VerifyEmail = () => {
 
     if (elapsed < RESEND_DELAY) {
       setSecondsLeft(RESEND_DELAY - elapsed);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (localStorage.getItem("openluma_email_verified") === "true") {
-      window.location.replace("/login");
     }
   }, []);
 
@@ -42,23 +40,27 @@ const VerifyEmail = () => {
 
   const handleResend = async () => {
     if (!email) {
-      setMessage("Please enter your email.");
+      setMessage("Please enter your email address first.");
+      setIsSuccess(false);
       return;
     }
 
     setLoading(true);
     setMessage(null);
+    setIsSuccess(false);
 
     try {
       await resendVerification({ email });
 
       localStorage.setItem(STORAGE_KEY, Date.now().toString());
       setSecondsLeft(RESEND_DELAY);
-      setMessage("Verification email resent successfully.");
+      setMessage("Verification email sent! Please check your inbox.");
+      setIsSuccess(true);
     } catch (err: any) {
       setMessage(
         err?.response?.data?.message || "Failed to resend verification email."
       );
+      setIsSuccess(false);
     } finally {
       setLoading(false);
     }
@@ -68,45 +70,83 @@ const VerifyEmail = () => {
   const seconds = secondsLeft % 60;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">Verify your email</CardTitle>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#121212] p-4">
+      <Card className="w-full max-w-md bg-[#181818] border-zinc-800 shadow-2xl">
+        <CardHeader className="space-y-1 pb-6">
+          <div className="mx-auto w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center mb-4 border border-zinc-700">
+            <Mail className="h-6 w-6 text-white" />
+          </div>
+          <CardTitle className="text-2xl text-center text-white font-bold">
+            Verify your email
+          </CardTitle>
+          <p className="text-sm text-center text-zinc-400">
+            We've sent a link to your inbox. Please verify your email to
+            activate your account.
+          </p>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
-            We’ve sent a verification link to your email address.
-            <br />
-            Please verify your email to continue.
-          </p>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider ml-1">
+                Confirm Email Address
+              </label>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 bg-[#212121] border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-500"
+              />
+            </div>
 
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <Button
-            className="w-full"
-            onClick={handleResend}
-            disabled={loading || secondsLeft > 0}
-          >
-            {secondsLeft > 0
-              ? `Resend in ${minutes}:${seconds.toString().padStart(2, "0")}`
-              : "Resend verification email"}
-          </Button>
+            <Button
+              className={clsx(
+                "w-full h-12 font-semibold transition-all",
+                secondsLeft > 0
+                  ? "bg-zinc-800 text-zinc-400 cursor-not-allowed"
+                  : "bg-white text-black hover:bg-zinc-200"
+              )}
+              onClick={handleResend}
+              disabled={loading || secondsLeft > 0}
+            >
+              {loading ? (
+                <Loader2 className="animate-spin h-5 w-5" />
+              ) : secondsLeft > 0 ? (
+                `Resend available in ${minutes}:${seconds
+                  .toString()
+                  .padStart(2, "0")}`
+              ) : (
+                "Resend Verification Email"
+              )}
+            </Button>
+          </div>
 
           {message && (
-            <p className="text-sm text-center text-muted-foreground">
+            <div
+              className={clsx(
+                "p-3 rounded-lg text-sm text-center border",
+                isSuccess
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                  : "bg-red-500/10 text-red-400 border-red-500/20"
+              )}
+            >
+              {isSuccess && (
+                <CheckCircle2 className="inline-block w-4 h-4 mr-2 -mt-0.5" />
+              )}
               {message}
-            </p>
+            </div>
           )}
 
-          <p className="text-xs text-center text-muted-foreground">
-            After verifying, return to the login page to sign in.
-          </p>
+          <div className="pt-2 text-center">
+            <Link
+              to="/login"
+              className="inline-flex items-center text-sm text-zinc-500 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Login
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

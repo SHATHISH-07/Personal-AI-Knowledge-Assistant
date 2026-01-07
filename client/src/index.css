@@ -97,3 +97,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #212121;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff transparent;
+  }
+
+  .dark * {
+    scrollbar-width: thin;
+    scrollbar-color: #212121 transparent;
+  }
+}

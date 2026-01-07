@@ -28,6 +28,11 @@ export class FilesController {
         return this.filesService.getFile(req.user.userId, fileId);
     }
 
+    @Get(':fileName')
+    getFileByName(@Req() req, @Param('fileName') fileName: string) {
+        return this.filesService.getFileByName(req.user.userId, fileName);
+    }
+
     @Patch(':fileId/archive')
     archive(@Req() req, @Param('fileId') fileId: string) {
         return this.filesService.archiveFile(req.user.userId, fileId);

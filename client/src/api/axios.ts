@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/auth.store";
 import axios from "axios";
 
 const api = axios.create({
@@ -10,22 +11,30 @@ const api = axios.create({
 })
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (!error.response) {
-            console.error("Network error or server unreachable");
-            return Promise.reject(error);
-        }
+    (res) => res,
+    async (error) => {
+        const original = error.config;
 
-        const status = error.response.status;
+        if (
+            error.response?.status === 401 &&
+            !original._retry
+        ) {
+            original._retry = true;
 
-        if (status === 401) {
-            console.warn("Unauthorized – redirect to login if needed");
+            try {
+                await api.post("/auth/refresh");
+                return api(original);
+            } catch {
+                const { logoutUser } = useAuthStore.getState();
+                await logoutUser();
+                window.location.href = "/login";
+            }
         }
 
         return Promise.reject(error);
     }
 );
+
 
 export default api;
 

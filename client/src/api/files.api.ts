@@ -9,6 +9,10 @@ export const getFileById = (fileId: string) => {
     return api.get<FileItem>(`/files/${fileId}`);
 };
 
+export const getFileByName = (fileName: string) => {
+    return api.get<FileItem>(`/files/name/${fileName}`);
+};
+
 export const uploadFile = (file: File) => {
     const formData = new FormData();
     formData.append("file", file);

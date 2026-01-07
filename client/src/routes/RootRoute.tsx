@@ -5,7 +5,7 @@ import LandingPage from "@/pages/LandingPage";
 const RootRoute = () => {
   const { isAuthenticated } = useAuth();
 
-  return isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />;
+  return isAuthenticated ? <Navigate to="/overview" /> : <LandingPage />;
 };
 
 export default RootRoute;

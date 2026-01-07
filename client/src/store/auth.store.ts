@@ -13,7 +13,7 @@ interface AuthState {
     logoutUser: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     isAuthenticated: false,
     isInitialized: false,
@@ -22,6 +22,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     initializeAuth: async () => {
         set({ isLoading: true });
+
+        if (get().isInitialized) return;
 
         try {
             const res = await getMe();

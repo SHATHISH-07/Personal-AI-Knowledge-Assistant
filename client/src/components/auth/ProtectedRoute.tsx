@@ -8,7 +8,11 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const location = useLocation();
 
   if (!isInitialized) {
-    return <Spinner />;
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#181818]">
+        <Spinner />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

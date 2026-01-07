@@ -4,10 +4,13 @@ import AppRoutes from "@/routes/AppRoutes";
 
 function App() {
   const initializeAuth = useAuthStore((s) => s.initializeAuth);
+  const isInitialized = useAuthStore((s) => s.isInitialized);
 
   useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
+    if (!isInitialized) {
+      initializeAuth();
+    }
+  }, [initializeAuth, isInitialized]);
 
   useEffect(() => {
     const onFocus = () => {

@@ -37,7 +37,9 @@ const AppRoutes = () => {
         path="/files"
         element={
           <ProtectedRoute>
-            <Files />
+            <AppLayout>
+              <Files />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -46,7 +48,9 @@ const AppRoutes = () => {
         path="/upload"
         element={
           <ProtectedRoute>
-            <Upload />
+            <AppLayout>
+              <Upload />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -55,7 +59,9 @@ const AppRoutes = () => {
         path="/ask"
         element={
           <ProtectedRoute>
-            <Ask />
+            <AppLayout>
+              <Ask />
+            </AppLayout>
           </ProtectedRoute>
         }
       />

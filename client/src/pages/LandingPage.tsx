@@ -1,10 +1,132 @@
+import { useRef, useLayoutEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import logo from "/assets/favicon.ico";
 
+// Register GSAP Plugin
+gsap.registerPlugin(ScrollTrigger);
+
 const LandingPage = () => {
+  const mainRef = useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Hero Animation Timeline
+      const tl = gsap.timeline();
+
+      tl.from(".hero-badge", {
+        y: -20,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+      })
+        .from(
+          ".hero-title",
+          {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.2,
+          },
+          "-=0.4"
+        )
+        .from(
+          ".hero-desc",
+          {
+            y: 30,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out",
+          },
+          "-=0.6"
+        )
+        .from(
+          ".hero-btns",
+          {
+            y: 20,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out",
+          },
+          "-=0.6"
+        )
+        .from(
+          ".hero-dashboard",
+          {
+            y: 100,
+            opacity: 0,
+            rotationX: 15, // 3D tilt effect entrance
+            duration: 1.2,
+            ease: "power4.out",
+          },
+          "-=0.6"
+        );
+
+      // 2. Tech Stack Pills (ScrollTrigger)
+      gsap.fromTo(
+        ".tech-pill",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.05,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+          scrollTrigger: {
+            trigger: ".tech-section",
+            start: "top 85%", // Triggers when top of section hits 85% of viewport height
+            toggleActions: "play none none reverse", // Replays if you scroll up and down
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".feature-card",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".features-grid",
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // 4. CTA Section (Fixed with fromTo)
+      gsap.fromTo(
+        ".cta-content",
+        { scale: 0.9, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".cta-section",
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }, mainRef);
+
+    return () => ctx.revert(); // Cleanup
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#181818] text-zinc-100 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
-      {/* Background Grid - Made subtler for the gray theme */}
+    <div
+      ref={mainRef}
+      className="min-h-screen bg-[#181818] text-zinc-100 font-sans selection:bg-indigo-500/30 overflow-x-hidden"
+    >
+      {/* Background Grid */}
       <div
         className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
         style={{
@@ -17,10 +139,10 @@ const LandingPage = () => {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-150 h-100 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none z-0" />
 
       {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 bg-[#181818]/90 backdrop-blur-xl border-b border-white/5">
+      <header className="fixed top-0 w-full z-50 bg-[#181818]/90 backdrop-blur-xl border-b border-white/5 transition-all">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8  flex items-center justify-center ">
+            <div className="w-8 h-8 flex items-center justify-center">
               <img src={logo} alt="OL" className="w-6 h-6" />
             </div>
             <h1 className="text-lg font-bold tracking-tight text-white">
@@ -28,6 +150,7 @@ const LandingPage = () => {
             </h1>
           </div>
 
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
             <a
               href="#architecture"
@@ -38,6 +161,7 @@ const LandingPage = () => {
             <a
               href="https://github.com/SHATHISH-07/Personal-AI-Knowledge-Assistant"
               target="_blank"
+              rel="noreferrer"
               className="hover:text-white transition-colors"
             >
               Source
@@ -47,7 +171,7 @@ const LandingPage = () => {
             </a>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
             <Link
               to="/login"
               className="text-sm font-medium text-zinc-400 hover:text-white transition"
@@ -61,13 +185,96 @@ const LandingPage = () => {
               Initialize
             </Link>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-zinc-400 hover:text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile Nav Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 w-full bg-[#181818] border-b border-white/5 p-6 flex flex-col gap-6 shadow-2xl animate-in slide-in-from-top-5 duration-200">
+            <nav className="flex flex-col gap-4 text-zinc-400">
+              <a
+                href="#architecture"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:text-white transition-colors"
+              >
+                Architecture
+              </a>
+              <a
+                href="https://github.com/SHATHISH-07/Personal-AI-Knowledge-Assistant"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                Source
+              </a>
+              <a
+                href="#poweredby"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:text-white transition-colors"
+              >
+                Powered By
+              </a>
+            </nav>
+            <div className="flex flex-col gap-3 pt-4 border-t border-white/5">
+              <Link
+                to="/login"
+                className="text-center py-2 text-zinc-400 hover:text-white transition"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/register"
+                className="bg-zinc-100 text-[#181818] px-5 py-3 rounded-lg text-sm font-bold hover:bg-white transition text-center"
+              >
+                Initialize
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* HERO SECTION */}
-      <section className="relative z-10 pt-36 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
+      <section className="relative z-10 pt-36 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center perspective-[1000px]">
         {/* Status Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 border border-white/5 rounded-full bg-[#212121] shadow-xl">
+        <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 mb-8 border border-white/5 rounded-full bg-[#212121] shadow-xl backdrop-blur-sm">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -77,17 +284,19 @@ const LandingPage = () => {
           </span>
         </div>
 
-        <h2 className="text-5xl md:text-8xl font-bold tracking-tight leading-[0.95] mb-8 text-white">
-          Your Knowledge. <br />
-          <span className="text-zinc-500">Vectorized & Private.</span>
+        <h2 className="text-4xl md:text-5xl lg:text-8xl font-bold tracking-tight leading-[1.1] md:leading-[0.95] mb-8 text-white">
+          <span className="hero-title block">Your Knowledge.</span>
+          <span className="hero-title block text-zinc-500">
+            Vectorized & Private.
+          </span>
         </h2>
 
-        <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed font-light">
+        <p className="hero-desc text-base md:text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed font-light px-4">
           A full-stack RAG assistant that turns your codebase and notes into an
           intelligent query engine. Zero public data training. 100% ownership.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-24">
+        <div className="hero-btns flex flex-col sm:flex-row gap-4 mb-24 w-full sm:w-auto px-4">
           <Link
             to="/register"
             className="bg-zinc-100 text-[#181818] h-12 px-8 rounded-xl font-bold hover:bg-white transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-[1.02] duration-200"
@@ -103,8 +312,8 @@ const LandingPage = () => {
         </div>
 
         {/* DASHBOARD MOCKUP */}
-        <div className="relative w-full max-w-5xl group perspective-[1000px]">
-          <div className="relative w-full bg-[#212121] border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-transform duration-700 ease-out hover:-translate-y-1">
+        <div className="hero-dashboard relative w-full max-w-5xl group perspective-[1000px] px-2 md:px-0">
+          <div className="relative w-full bg-[#212121] border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-transform duration-700 ease-out hover:-translate-y-2 hover:rotate-x-2">
             {/* Header */}
             <div className="h-10 bg-[#1a1a1a] border-b border-white/5 flex items-center px-4 justify-between">
               <div className="flex gap-2">
@@ -118,8 +327,8 @@ const LandingPage = () => {
             </div>
 
             {/* Body */}
-            <div className="p-0 grid grid-cols-12 h-112.5 font-mono text-xs text-left">
-              {/* Sidebar */}
+            <div className="p-0 grid grid-cols-12 h-96 md:h-112.5 font-mono text-xs text-left">
+              {/* Sidebar - Hidden on mobile */}
               <div className="col-span-3 border-r border-white/5 bg-[#1c1c1c] p-5 hidden md:block">
                 <div className="text-[10px] text-zinc-500 font-bold mb-4 tracking-widest uppercase">
                   SOURCES
@@ -159,56 +368,58 @@ const LandingPage = () => {
               </div>
 
               {/* Main Terminal */}
-              <div className="col-span-12 md:col-span-9 p-8 bg-[#181818] overflow-hidden relative">
+              <div className="col-span-12 md:col-span-9 p-4 md:p-8 bg-[#181818] overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-indigo-500/50 to-transparent" />
 
                 <div className="space-y-6">
                   {/* Log Entry 1 */}
                   <div className="font-mono">
-                    <div className="flex gap-3 text-zinc-500 mb-1">
+                    <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:21</span>
                       <span className="text-purple-400">POST</span>
                       <span>/api/v1/ask</span>
                     </div>
-                    <div className="pl-20 text-zinc-300">
+                    <div className="pl-0 md:pl-20 text-zinc-300">
                       {`{ query: "How is JWT implemented?" }`}
                     </div>
                   </div>
 
                   {/* Log Entry 2 */}
                   <div className="font-mono relative">
-                    <div className="absolute left-[3.8rem] top-2 bottom-0 w-px bg-white/10"></div>
-                    <div className="flex gap-3 text-zinc-500 mb-1">
+                    <div className="hidden md:block absolute left-[3.8rem] top-2 bottom-0 w-px bg-white/10"></div>
+                    <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:22</span>
                       <span className="text-blue-400">EMBED</span>
                     </div>
-                    <div className="pl-20 text-zinc-400">
+                    <div className="pl-0 md:pl-20 text-zinc-400">
                       Generating 1536-dim vector via OpenAI...
                     </div>
                   </div>
 
                   {/* Log Entry 3 */}
                   <div className="font-mono">
-                    <div className="flex gap-3 text-zinc-500 mb-1">
+                    <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:22</span>
                       <span className="text-yellow-400">QDRANT</span>
                     </div>
-                    <div className="pl-20 text-zinc-300 bg-[#212121] p-3 rounded border border-white/5 border-l-2 border-l-yellow-500">
+                    <div className="pl-0 md:pl-20 text-zinc-300 bg-[#212121] p-3 rounded border border-white/5 border-l-2 border-l-yellow-500">
                       <span className="text-zinc-500 block text-[10px] mb-1">
                         SEARCH_RESULT
                       </span>
                       Matched 3 chunks (Score: 0.94) in{" "}
-                      <span className="text-white">auth.service.ts</span>
+                      <span className="text-white break-all">
+                        auth.service.ts
+                      </span>
                     </div>
                   </div>
 
                   {/* Log Entry 4 */}
                   <div id="poweredby" className="font-mono">
-                    <div className="flex gap-3 text-zinc-500 mb-1">
+                    <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:23</span>
                       <span className="text-green-400">READY</span>
                     </div>
-                    <div className="pl-20 text-green-400/80 animate-pulse">
+                    <div className="pl-0 md:pl-20 text-green-400/80 animate-pulse">
                       _ Streaming response...
                     </div>
                   </div>
@@ -219,8 +430,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* POWERED BY SECTION - CLEANED UP */}
-      <section className="py-16 bg-[#212121] border-y border-white/5">
+      {/* POWERED BY SECTION */}
+      <section className="tech-section py-16 bg-[#212121] border-y border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-center text-xs font-mono text-zinc-500 uppercase tracking-widest mb-8">
             Built on Modern Infrastructure
@@ -239,7 +450,10 @@ const LandingPage = () => {
       </section>
 
       {/* FEATURES GRID */}
-      <section id="architecture" className="py-32 px-6 max-w-7xl mx-auto">
+      <section
+        id="architecture"
+        className="py-24 md:py-32 px-6 max-w-7xl mx-auto"
+      >
         <div className="mb-20">
           <h3 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 text-white">
             Core Architecture
@@ -251,7 +465,7 @@ const LandingPage = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="features-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <FeatureCard
             number="01"
             title="Private Vault"
@@ -286,10 +500,10 @@ const LandingPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-32 px-6 text-center bg-[#212121]/50 border-t border-white/5 relative overflow-hidden ">
+      <section className="cta-section py-32 px-6 text-center bg-[#212121]/50 border-t border-white/5 relative overflow-hidden ">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-white/5 via-[#212121] to-[#212121] opacity-50 pointer-events-none"></div>
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h3 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+        <div className="cta-content relative z-10 max-w-3xl mx-auto">
+          <h3 className="text-3xl md:text-5xl font-bold mb-6 text-white">
             Stop repeating yourself.
           </h3>
           <p className="text-zinc-400 text-lg mb-10">
@@ -298,7 +512,7 @@ const LandingPage = () => {
           </p>
           <Link
             to="/register"
-            className="inline-block bg-white text-[#181818] px-10 py-4 rounded-xl font-bold hover:bg-zinc-200 transition shadow-lg"
+            className="inline-block bg-white text-[#181818] px-10 py-4 rounded-xl font-bold hover:bg-zinc-200 transition shadow-lg hover:scale-105 duration-200"
           >
             Create Free Account
           </Link>
@@ -310,23 +524,24 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8  flex items-center justify-center">
+              <div className="w-8 h-8 flex items-center justify-center">
                 <img src={logo} alt="OL" className="w-6 h-6 opacity-70" />
               </div>
               <h1 className="text-lg font-bold tracking-tight text-white">
                 OpenLuma
               </h1>
             </div>
-            <div className="text-zinc-500 max-w-xs leading-relaxed">
+            <div className="text-zinc-500 max-w-xs leading-relaxed text-sm md:text-base">
               A Full-Stack RAG Knowledge System. <br />
               Salem, India.
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-8 text-zinc-500 font-mono text-lg">
+          <div className="flex flex-wrap gap-8 text-zinc-500 font-mono text-sm md:text-lg">
             <a
               href="https://shathish2004.github.io/Shathish-Portfolio/"
               target="_blank"
+              rel="noreferrer"
               className="hover:text-white transition"
             >
               CREATOR
@@ -334,6 +549,7 @@ const LandingPage = () => {
             <a
               href="https://github.com/SHATHISH-07/Personal-AI-Knowledge-Assistant"
               target="_blank"
+              rel="noreferrer"
               className="hover:text-white transition"
             >
               GITHUB
@@ -341,13 +557,14 @@ const LandingPage = () => {
             <a
               href="https://www.linkedin.com/in/shathish-kumaran/"
               target="_blank"
+              rel="noreferrer"
               className="hover:text-white transition"
             >
               LINKEDIN
             </a>
           </div>
 
-          <div className="text-zinc-600 font-mono text-lg">
+          <div className="text-zinc-600 font-mono text-sm md:text-lg w-full md:w-auto text-left md:text-right">
             © {new Date().getFullYear()} OPENLUMA.
           </div>
         </div>
@@ -367,7 +584,8 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="bg-[#212121] p-8 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:-translate-y-1 hover:shadow-xl group">
+  // Added "feature-card" class selector for GSAP
+  <div className="feature-card bg-[#212121]/70 p-8 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:-translate-y-2 hover:shadow-2xl group cursor-default">
     <div className="text-zinc-600 font-mono text-xs mb-4 group-hover:text-indigo-400 transition-colors">
       {number}
     </div>
@@ -377,7 +595,8 @@ const FeatureCard = ({
 );
 
 const TechPill = ({ label, color }: { label: string; color: string }) => (
-  <div className="flex items-center gap-2 px-4 py-2 bg-[#181818] border border-white/5 rounded-full text-zinc-300 text-sm font-mono hover:border-white/20 transition-colors cursor-default">
+  // Added "tech-pill" class selector for GSAP
+  <div className="tech-pill flex items-center gap-2 px-4 py-2 bg-[#181818] border border-white/5 rounded-full text-zinc-300 text-sm font-mono hover:border-white/20 hover:bg-white/5 transition-all cursor-default">
     <div className={`w-2 h-2 rounded-full ${color}`}></div>
     {label}
   </div>

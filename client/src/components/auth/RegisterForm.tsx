@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { register } from "@/api/auth.api";
 import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -31,7 +32,7 @@ const RegisterForm = () => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
-        className="h-11"
+        className="w-full h-11 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
       />
 
       <Input
@@ -40,7 +41,7 @@ const RegisterForm = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="h-11"
+        className="w-full h-11 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
       />
 
       <Input
@@ -49,14 +50,21 @@ const RegisterForm = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="h-11"
+        className="w-full h-11 text-base font-medium bg-[#212121] border-zinc-700 focus:border-zinc-500 text-zinc-100 placeholder:text-zinc-500"
       />
 
       <Button
-        className="w-full h-12 text-base font-semibold"
+        className="w-full h-12 text-base font-bold bg-white text-black hover:bg-zinc-200 transition-colors mt-2"
         disabled={loading}
       >
-        {loading ? "Creating account..." : "Create account"}
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating account...
+          </>
+        ) : (
+          "Create account"
+        )}
       </Button>
     </form>
   );

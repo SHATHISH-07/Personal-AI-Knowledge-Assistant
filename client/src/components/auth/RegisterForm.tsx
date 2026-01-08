@@ -14,8 +14,6 @@ const RegisterForm = () => {
 
   const navigate = useNavigate();
 
-  // inside RegisterForm.tsx
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

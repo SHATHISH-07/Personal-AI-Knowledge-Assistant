@@ -125,10 +125,14 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 24);
 
-        await this.mailService.sendVerificationEmail(
-            newUser.email,
-            rawToken,
-        );
+        try {
+            await this.mailService.sendVerificationEmail(
+                newUser.email,
+                rawToken,
+            );
+        } catch (error) {
+            console.error("Failed to send verification email:", error);
+        }
 
         await this.emailVerificationModel.create({
             userId: newUser._id,

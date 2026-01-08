@@ -19,6 +19,7 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       await register({ name, email, password });
+      localStorage.setItem("verification_email", email);
       navigate("/verify-email");
       toast.success(
         "Registration successful - check your email for verification"

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { resendVerification } from "@/api/auth.api";
-import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Loader2, Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
 import clsx from "clsx";
 
 const RESEND_DELAY = 5 * 60;
 const STORAGE_KEY = "openluma_resend_at";
+const EMAIL_STORAGE_KEY = "verification_email";
 
 const VerifyEmail = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +16,13 @@ const VerifyEmail = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem(EMAIL_STORAGE_KEY);
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
 
   useEffect(() => {
     const lastSent = localStorage.getItem(STORAGE_KEY);
@@ -40,7 +47,7 @@ const VerifyEmail = () => {
 
   const handleResend = async () => {
     if (!email) {
-      setMessage("Please enter your email address first.");
+      setMessage("Email address is missing. Please try logging in again.");
       setIsSuccess(false);
       return;
     }
@@ -77,28 +84,30 @@ const VerifyEmail = () => {
             <Mail className="h-6 w-6 text-white" />
           </div>
           <CardTitle className="text-2xl text-center text-white font-bold">
-            Verify your email
+            Check your inbox
           </CardTitle>
           <p className="text-sm text-center text-zinc-400">
-            We've sent a link to your inbox. Please verify your email to
-            activate your account.
+            We've sent a verification link to:
+            <span className="block mt-1 font-medium text-white text-base">
+              {email || "your email address"}
+            </span>
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider ml-1">
                 Confirm Email Address
               </label>
               <Input
                 type="email"
-                placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-12 bg-[#212121] border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-500"
+                readOnly // Make it read-only so they don't accidentally change it
+                className="w-full h-12 bg-[#212121] border-zinc-700 text-zinc-400 cursor-not-allowed focus:border-zinc-700"
               />
-            </div>
+            </div> 
+            */}
 
             <Button
               className={clsx(
@@ -108,7 +117,7 @@ const VerifyEmail = () => {
                   : "bg-white text-black hover:bg-zinc-200"
               )}
               onClick={handleResend}
-              disabled={loading || secondsLeft > 0}
+              disabled={loading || secondsLeft > 0 || !email}
             >
               {loading ? (
                 <Loader2 className="animate-spin h-5 w-5" />

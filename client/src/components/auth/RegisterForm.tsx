@@ -14,18 +14,26 @@ const RegisterForm = () => {
 
   const navigate = useNavigate();
 
+  // inside RegisterForm.tsx
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await register({ name, email, password });
+
       localStorage.setItem("verification_email", email);
+
       navigate("/verify-email");
       toast.success(
         "Registration successful - check your email for verification"
       );
-    } catch (error) {
-      toast.error("Registration failed");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "Registration failed";
+
+      console.error("Registration Error Details:", error.response);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

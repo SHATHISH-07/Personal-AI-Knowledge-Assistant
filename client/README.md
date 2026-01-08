@@ -284,6 +284,15 @@ EnvVars --> ProductionMode
 ProductionMode --> SecureCookies
 ```
 
+## Environment Variable
+
+```bash
+VITE_API_URL=Backend_url
+
+OPENLUMA_RECENT_QUESTIONS_KEY="openluma_recent_questions";
+
+```
+
 ## Summary
 
 Cookie-based authentication

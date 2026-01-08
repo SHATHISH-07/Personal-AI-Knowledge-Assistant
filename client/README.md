@@ -72,101 +72,228 @@ export default defineConfig([
 ]);
 ```
 
-```text
-openluma-frontend/
-│
-├── public/
-│   ├── logo.svg
-│   └── favicon.ico
-│
-├── src/
-│   │
-│   ├── api/                     # All backend communication
-│   │   ├── axios.ts
-│   │   ├── auth.api.ts
-│   │   ├── files.api.ts
-│   │   └── ask.api.ts
-│   │
-│   ├── components/
-│   │   ├── ui/                  # shadcn generated components
-│   │   │   ├── button.tsx
-│   │   │   ├── input.tsx
-│   │   │   └── card.tsx
-│   │   │
-│   │   ├── layout/              # App shell
-│   │   │   ├── Sidebar.tsx
-│   │   │   ├── Topbar.tsx
-│   │   │   └── AppLayout.tsx
-│   │   │
-│   │   ├── auth/                # Auth-related UI
-│   │   │   ├── LoginForm.tsx
-│   │   │   ├── RegisterForm.tsx
-│   │   │   └── ProtectedRoute.tsx
-│   │   │
-│   │   ├── files/               # Knowledge base UI
-│   │   │   ├── FileTable.tsx
-│   │   │   ├── FileRow.tsx
-│   │   │   ├── FileActions.tsx
-│   │   │   └── FileDetail.tsx
-│   │   │
-│   │   ├── upload/              # Upload & processing
-│   │   │   ├── UploadDropzone.tsx
-│   │   │   └── UploadProgress.tsx
-│   │   │
-│   │   ├── chat/                # Ask AI (stateless)
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── ChatMessage.tsx
-│   │   │   ├── ChatList.tsx
-│   │   │   └── SourcesPanel.tsx
-│   │   │
-│   │   └── common/              # Shared components
-│   │       ├── Loader.tsx
-│   │       ├── EmptyState.tsx
-│   │       └── ErrorState.tsx
-│   │
-│   ├── pages/                   # Route-level pages
-│   │   ├── Login.tsx
-│   │   ├── Register.tsx
-│   │   ├── Dashboard.tsx
-│   │   ├── Files.tsx
-│   │   ├── Upload.tsx
-│   │   ├── Ask.tsx
-│   │   └── NotFound.tsx
-│   │
-│   ├── store/                   # Global state (lightweight)
-│   │   ├── auth.store.ts
-│   │   ├── file.store.ts
-│   │   └── chat.store.ts
-│   │
-│   ├── hooks/                   # Custom hooks
-│   │   ├── useAuth.ts
-│   │   ├── useFiles.ts
-│   │   └── useRecentQuestions.ts
-│   │
-│   ├── utils/                   # Helpers & constants
-│   │   ├── formatDate.ts
-│   │   ├── fileUtils.ts
-│   │   └── storage.ts
-│   │
-│   ├── types/                   # TypeScript types
-│   │   ├── auth.types.ts
-│   │   ├── file.types.ts
-│   │   └── chat.types.ts
-│   │
-│   ├── routes/                  # Routing config
-│   │   └── AppRoutes.tsx
-│   │
-│   ├── styles/
-│   │   └── globals.css
-│   │
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── index.css
-│
-├── .env
-├── .env.production
-├── tailwind.config.js
-├── tsconfig.json
-├── vite.config.ts
-└── package.json
+# OpenLuma Frontend – Architecture & Flow
+
+## Overview
+
+### The OpenLuma frontend is a React-based application that provides a secure, private interface for interacting with a personal AI knowledge assistant. It handles authentication, file uploads, semantic search via RAG, and an AI chat interface while relying on HTTP-only cookies for security.
+
+## High-Level Frontend Architecture
+
+```mermaid
+flowchart TB
+User --> Browser
+Browser --> ReactApp
+ReactApp --> Router
+ReactApp --> ZustandStore
+ReactApp --> APIClient
+APIClient --> BackendAPI
 ```
+
+## Application Routing Flow
+
+```mermaid
+flowchart LR
+Root["/"] --> AuthCheck
+AuthCheck -->|Authenticated| Dashboard
+AuthCheck -->|Not Authenticated| LandingPage
+
+    LandingPage --> Login
+    LandingPage --> Register
+
+    Login --> Dashboard
+    Register --> VerifyEmailPage
+
+    Dashboard --> Upload
+    Dashboard --> Files
+    Dashboard --> AskAI
+```
+
+## Authentication Flow (Cookie-Based)
+
+```mermaid
+sequenceDiagram
+participant User
+participant Frontend
+participant Backend
+
+    User ->> Frontend: Enter credentials
+    Frontend ->> Backend: POST /auth/login
+    Backend ->> Backend: Validate credentials
+    Backend ->> Frontend: Set accessToken cookie
+    Frontend ->> Backend: GET /users/me
+    Backend ->> Frontend: User profile
+    Frontend ->> User: Logged in
+```
+
+## Auto Session Recovery on Refresh
+
+```mermaid
+sequenceDiagram
+participant Browser
+participant Frontend
+participant Backend
+
+    Browser ->> Frontend: Page reload
+    Frontend ->> Backend: GET /users/me
+    Backend -->> Frontend: 200 User
+    Frontend ->> Browser: Restore session
+```
+
+## Auto Logout on Token Expiry
+
+```mermaid
+sequenceDiagram
+participant Frontend
+participant Backend
+
+    Frontend ->> Backend: API request
+    Backend -->> Frontend: 401 Unauthorized
+    Frontend ->> Backend: POST /auth/refresh
+    alt Refresh valid
+        Backend -->> Frontend: New cookies
+        Frontend ->> Backend: Retry request
+    else Refresh invalid
+        Backend -->> Frontend: 401
+        Frontend ->> Frontend: Logout user
+    end
+```
+
+## File Upload Flow
+
+```mermaid
+sequenceDiagram
+participant User
+participant Frontend
+participant Backend
+
+    User ->> Frontend: Select files
+    Frontend ->> Backend: POST /files/upload
+    Backend ->> Backend: Extract text
+    Backend ->> Backend: Chunk content
+    Backend ->> Backend: Generate embeddings
+    Backend ->> Backend: Store vectors
+    Backend -->> Frontend: Upload success
+    Frontend ->> Backend: GET /files
+    Backend -->> Frontend: Updated file list
+```
+
+## File Management (Archive / Unarchive)
+
+```mermaid
+flowchart LR
+FileList --> ArchiveAction
+ArchiveAction --> BackendArchive
+BackendArchive --> FileListRefresh
+
+    FileList --> UnarchiveAction
+    UnarchiveAction --> BackendUnarchive
+    BackendUnarchive --> FileListRefresh
+```
+
+## Ask AI (RAG Chat) Flow
+
+```mermaid
+sequenceDiagram
+participant User
+participant Frontend
+participant Backend
+
+    User ->> Frontend: Ask question
+    Frontend ->> Backend: POST /ask
+    Backend ->> Backend: Embed question
+    Backend ->> Backend: Vector search
+    Backend ->> Backend: Build context
+    Backend ->> Backend: Generate answer
+    Backend -->> Frontend: Answer + sources
+    Frontend ->> User: Render AI response
+```
+
+## Chat History (Local Storage)
+
+```mermaid
+flowchart TB
+AskAI --> SaveQuestion
+SaveQuestion --> LocalStorage
+LocalStorage --> SidebarHistory
+```
+
+Rules:
+
+Only last 10 questions stored
+
+Per-user browser storage
+
+Cleared on logout
+
+## State Management (Zustand)
+
+```mermaid
+flowchart TB
+ZustandStore --> AuthState
+ZustandStore --> FileState
+ZustandStore --> ChatState
+
+    AuthState --> isAuthenticated
+    AuthState --> user
+
+    FileState --> files
+    FileState --> archivedFiles
+
+    ChatState --> messages
+    ChatState --> loading
+```
+
+## UI Layout Structure
+
+```mermaid
+flowchart TB
+AppLayout --> Sidebar
+AppLayout --> Topbar
+AppLayout --> PageContent
+
+    Sidebar --> Navigation
+    Sidebar --> ChatHistory
+    Sidebar --> UserMenu
+
+    PageContent --> Dashboard
+    PageContent --> Upload
+    PageContent --> Files
+    PageContent --> AskAI
+```
+
+## Security Model (Frontend)
+
+```mermaid
+flowchart LR
+Cookies --> HTTPOnly
+Cookies --> Secure
+Cookies --> SameSite
+
+    HTTPOnly --> NoJSAccess
+    Secure --> HTTPSOnly
+    SameSite --> CrossSiteAllowed
+```
+
+## Environment Configuration
+
+```mermaid
+flowchart TB
+EnvVars --> API_URL
+EnvVars --> ProductionMode
+ProductionMode --> SecureCookies
+```
+
+## Summary
+
+Cookie-based authentication
+
+No tokens stored in localStorage
+
+RAG-powered AI chat
+
+Local-first chat history
+
+Clean separation of concerns
+
+Production-ready architecture

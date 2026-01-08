@@ -16,7 +16,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL || "https://personal-ai-knowledge-assistant.vercel.app/",
+    origin: process.env.FRONTEND_URL || "https://personal-ai-knowledge-assistant.vercel.app",
     credentials: true,
   });
 

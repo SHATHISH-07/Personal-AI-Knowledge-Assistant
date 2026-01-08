@@ -33,10 +33,7 @@ const UploadRow: FC<Props> = ({ item, onRemove }) => {
           : "border-gray-200 hover:border-gray-300"
       )}
     >
-      {/* Left Side: Icon & Info */}
-      {/* min-w-0 is critical for truncation to work in flex children */}
       <div className="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
-        {/* File Icon - Fixed size */}
         <div
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
@@ -55,7 +52,6 @@ const UploadRow: FC<Props> = ({ item, onRemove }) => {
           )}
         </div>
 
-        {/* File Info - Shrinks with text */}
         <div className="flex flex-col min-w-0 flex-1">
           <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-200 block">
             {item.file.name}
@@ -77,7 +73,6 @@ const UploadRow: FC<Props> = ({ item, onRemove }) => {
         </div>
       </div>
 
-      {/* Actions - Fixed size */}
       <div className="flex items-center gap-2 shrink-0">
         {isUploading && (
           <Loader2 className="h-4 w-4 animate-spin text-[#212121]" />

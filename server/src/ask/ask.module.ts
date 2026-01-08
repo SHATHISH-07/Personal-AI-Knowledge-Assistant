@@ -4,11 +4,13 @@ import { AskService } from './ask.service';
 import { AskController } from './ask.controller';
 import { VectorDbModule } from 'src/vector-db/vector-db.module';
 import { EmbeddingModule } from 'src/embedding/embedding.module';
-
+import { FilesModule } from 'src/files/files.module';
 @Module({
     imports: [LlmModule,
         VectorDbModule,
         EmbeddingModule,
+        FilesModule
+
     ],
     providers: [AskService],
     controllers: [AskController],

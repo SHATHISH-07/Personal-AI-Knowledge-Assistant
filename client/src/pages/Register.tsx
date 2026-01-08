@@ -11,7 +11,6 @@ const Register = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Text Elements Stagger In (Left Side)
       gsap.from(".animate-text", {
         y: 20,
         opacity: 0,
@@ -21,7 +20,6 @@ const Register = () => {
         delay: 0.2,
       });
 
-      // 2. 3D Mockup Float Entrance
       gsap.from(".animate-mockup", {
         y: 100,
         opacity: 0,
@@ -30,7 +28,6 @@ const Register = () => {
         delay: 0.4,
       });
 
-      // 3. Continuous Floating Animation
       gsap.to(".floating-mockup", {
         y: -15,
         duration: 4,
@@ -40,7 +37,6 @@ const Register = () => {
         delay: 1.6,
       });
 
-      // 4. Register Card Entrance (Right Side)
       gsap.from(".register-card-container", {
         scale: 0.95,
         opacity: 0,
@@ -58,9 +54,7 @@ const Register = () => {
       ref={containerRef}
       className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2 bg-[#121212] overflow-hidden"
     >
-      {/* LEFT BRAND SECTION - Hidden on Mobile */}
       <div className="hidden md:flex flex-col relative overflow-hidden bg-[#181818] border-r border-white/5 h-full">
-        {/* Background Pattern */}
         <div
           className="absolute inset-0 z-0 opacity-20 pointer-events-none"
           style={{
@@ -69,7 +63,6 @@ const Register = () => {
           }}
         />
 
-        {/* Branding Content */}
         <div className="z-20 relative p-12 pb-0 mt-8 space-y-6">
           <div className="animate-text flex items-center gap-3 mb-2">
             <img src={logo} alt="OL" className="w-8 h-8 opacity-90" />
@@ -96,7 +89,6 @@ const Register = () => {
           </div>
         </div>
 
-        {/* 3D Visual Container */}
         <div className="animate-mockup absolute top-[45%] left-12 right-0 bottom-[-10%] z-10 perspective-[1000px] pointer-events-none select-none">
           <div className="floating-mockup w-full h-full">
             <div
@@ -104,29 +96,24 @@ const Register = () => {
                           transform rotate-x-6 rotate-y-6 -rotate-z-2 scale-100 origin-top-right
                           overflow-hidden"
             >
-              {/* Mock App Header */}
               <div className="h-12 border-b border-white/5 flex items-center px-6 space-x-2 bg-[#252525]">
                 <div className="w-3 h-3 rounded-full bg-red-500/20"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500/20"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500/20"></div>
-                {/* Context Pill */}
+
                 <div className="ml-4 h-5 w-32 bg-zinc-800 rounded text-[10px] flex items-center px-2 text-zinc-500 font-mono">
                   checking-knowledge-base...
                 </div>
               </div>
 
-              {/* Mock App Body - CHAT / ASSISTANT INTERFACE */}
               <div className="flex h-full">
-                {/* Sidebar (History) */}
                 <div className="w-20 border-r border-white/5 bg-[#222] flex flex-col items-center py-6 space-y-4">
                   <div className="w-8 h-8 bg-white/5 rounded-md border border-white/5"></div>
                   <div className="w-8 h-8 bg-white/5 rounded-md border border-white/5 opacity-50"></div>
                   <div className="w-8 h-8 bg-white/5 rounded-md border border-white/5 opacity-30"></div>
                 </div>
 
-                {/* Main Chat Area */}
                 <div className="flex-1 p-8 flex flex-col space-y-6 relative">
-                  {/* Message 1: AI/System (Left) */}
                   <div className="flex gap-4 max-w-[80%]">
                     <div className="w-8 h-8 rounded-full bg-indigo-500/20 shrink-0 border border-indigo-500/30" />
                     <div className="space-y-2">
@@ -138,7 +125,6 @@ const Register = () => {
                     </div>
                   </div>
 
-                  {/* Message 2: User (Right) */}
                   <div className="flex gap-4 max-w-[80%] ml-auto flex-row-reverse">
                     <div className="w-8 h-8 rounded-full bg-white/10 shrink-0" />
                     <div className="space-y-2">
@@ -148,12 +134,10 @@ const Register = () => {
                     </div>
                   </div>
 
-                  {/* Message 3: AI Generating (Left) */}
                   <div className="flex gap-4 max-w-[80%]">
                     <div className="w-8 h-8 rounded-full bg-indigo-500/20 shrink-0 border border-indigo-500/30" />
                     <div className="space-y-2">
                       <div className="p-4 bg-[#2a2a2a] rounded-2xl rounded-tl-none border border-white/5">
-                        {/* Thinking Animation Dots */}
                         <div className="flex space-x-1">
                           <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" />
                           <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce delay-75" />
@@ -163,7 +147,6 @@ const Register = () => {
                     </div>
                   </div>
 
-                  {/* Input Area (Absolute Bottom) */}
                   <div className="absolute bottom-20 left-8 right-8">
                     <div className="h-12 bg-[#252525] rounded-xl border border-white/10 flex items-center px-4 justify-between">
                       <div className="h-2 w-32 bg-white/10 rounded-full"></div>
@@ -173,13 +156,11 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Glass Overlay */}
               <div className="absolute inset-0 bg-linear-to-t from-[#181818] via-transparent to-transparent opacity-80" />
             </div>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="animate-text absolute bottom-6 left-12 z-20">
           <p className="text-xs text-zinc-600 uppercase tracking-widest font-bold">
             © {new Date().getFullYear()} OpenLuma
@@ -187,9 +168,7 @@ const Register = () => {
         </div>
       </div>
 
-      {/* RIGHT REGISTER SECTION */}
       <div className="flex items-center justify-center px-6 py-12 bg-[#121212] relative z-30 min-h-screen md:min-h-full">
-        {/* Mobile Background Pattern */}
         <div
           className="md:hidden absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
           style={{
@@ -200,7 +179,6 @@ const Register = () => {
         />
 
         <div className="register-card-container w-full max-w-md relative z-10">
-          {/* Mobile Logo */}
           <div className="md:hidden flex flex-col items-center mb-8">
             <div className="w-10 h-10 bg-[#181818] rounded-full flex items-center justify-center border border-white/10 mb-3 shadow-lg">
               <img src={logo} alt="OL" className="w-6 h-6" />

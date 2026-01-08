@@ -3,11 +3,15 @@ import { useAskStore } from "@/store/chat.store";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, Loader2 } from "lucide-react";
 import clsx from "clsx";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const AskInput = () => {
   const [value, setValue] = useState("");
   const { ask, loading, inputPrompt, setInputPrompt } = useAskStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { user } = useAuth();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -39,11 +43,15 @@ const AskInput = () => {
   }, [inputPrompt, setInputPrompt]);
 
   const submit = async () => {
-    if (!value.trim() || loading) return;
+    if (!value.trim() || loading || !user?._id) {
+      return toast.error(
+        "Please enter a question, or wait for the previous question to finish processing."
+      );
+    }
     const temp = value;
     setValue("");
     if (textareaRef.current) textareaRef.current.style.height = "24px";
-    await ask(temp.trim());
+    await ask(user._id, temp.trim());
   };
 
   return (
@@ -52,7 +60,7 @@ const AskInput = () => {
         <div
           className={clsx(
             "relative flex items-end gap-2 rounded-xl p-3 shadow-sm transition-all border",
-            "bg-white border-zinc-200 dark:bg-[#212121] dark:border-white/10",
+            "bg-gray-500/10 border-zinc-200 dark:bg-[#181818] dark:border-white/10",
             "focus-within:ring-2 focus-within:ring-zinc-900/10 dark:focus-within:ring-zinc-600/50",
             loading && "opacity-80 cursor-not-allowed"
           )}
@@ -66,7 +74,6 @@ const AskInput = () => {
             placeholder="Ask anything..."
             className={clsx(
               "min-h-6 max-h-50 w-full resize-none border-0 outline-none p-0 px-2 py-1 text-base scrollbar-hide bg-transparent",
-              // LIGHT: Dark text | DARK: Light text
               "text-zinc-900 placeholder:text-zinc-400 dark:text-zinc-200 dark:placeholder:text-zinc-500"
             )}
             onKeyDown={(e) => {

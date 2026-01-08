@@ -71,7 +71,6 @@ const Dashboard = () => {
 
       {/* MAIN CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start h-full">
-        {/* LEFT COLUMN: RECENT FILES (Takes up 2/3 space) */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="h-full border-zinc-200 shadow-sm dark:border-white/10 dark:bg-[#181818] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-zinc-100 dark:border-white/5">
@@ -104,14 +103,12 @@ const Dashboard = () => {
                   </p>
                 </div>
               ) : (
-                // FIX 2: Fixed height + Overflow Y + Custom Scrollbar
                 <div className="h-95 overflow-y-auto custom-scrollbar divide-y divide-zinc-100 dark:divide-white/5">
                   {summary.recentFiles.map((file) => (
                     <div
                       key={file._id}
                       className="group flex items-center justify-between p-4 hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors"
                     >
-                      {/* FIX 3: flex-1 and min-w-0 ensures truncation works */}
                       <div className="flex items-center gap-4 flex-1 min-w-0 pr-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
                           <FileText className="h-5 w-5" />
@@ -139,7 +136,6 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* RIGHT COLUMN: QUICK ACTIONS (Takes up 1/3 space) */}
         <div className="w-full">
           <Card className="border-zinc-200 shadow-sm dark:border-white/10 dark:bg-[#181818]">
             <CardHeader>

@@ -25,7 +25,6 @@ const FileList = ({ files }: Props) => {
           ACTIVE FILES - {active.length}
         </h2>
 
-        {/* Responsive Grid: 1 col on mobile, 2 cols on md+ screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {active.map((file) => (
             <FileRow key={file._id} file={file} />

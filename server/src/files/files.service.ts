@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { UploadFileDto } from './dto/uploadFile.dto';
 import { ContentSource, ContentSourceDocument } from 'src/content-source/schemas/content-source.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +7,7 @@ import { ChunkingService } from 'src/chunking/chunking.service';
 import { VectorDbService } from 'src/vector-db/vector-db.service';
 import { EmbeddingService } from 'src/embedding/embedding.service';
 import { randomUUID } from 'crypto';
+import { TextExtractorService } from './text-extractor.service';
 
 @Injectable()
 export class FilesService {
@@ -25,9 +25,21 @@ export class FilesService {
             throw new BadRequestException('File is required');
         }
 
-        const extension = file.originalname.split('.').pop();
-        const isCode = ['js', 'ts', 'py', 'java', 'c', 'cpp', 'go', 'html', 'css', 'php', 'json'].includes(extension ?? '');
-        const fileType = isCode ? 'code' : 'text';
+        const extension = file.originalname.split('.').pop()?.toLowerCase();
+
+        if (!extension) {
+            throw new BadRequestException('File extension is required');
+        }
+
+        const CODE_EXTENSIONS = new Set([
+            'js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs', 'html', 'htm', 'css', 'scss', 'sass', 'less',
+            'py', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go', 'rs', 'rb', 'php', 'pl', 'swift', 'kt', 'kts',
+            'json', 'yaml', 'yml', 'xml', 'toml', 'env', 'ini', 'conf', 'sql', 'prisma', 'sh', 'bash', 'zsh', 'bat', 'ps1', 'dockerfile'
+        ]);
+
+        const isCode = CODE_EXTENSIONS.has(extension);
+
+        const fileType: 'code' | 'text' = isCode ? 'code' : 'text';
 
         const savedFile = await this.fileModel.create({
             userId,
@@ -37,45 +49,57 @@ export class FilesService {
             size: file.size,
         });
 
-        const extractedText = file.buffer.toString('utf-8');
+        try {
+            const extractedText = await TextExtractorService.extract(file);
 
-        if (!extractedText.trim()) {
-            throw new BadRequestException('File is empty');
+            if (!extractedText.trim()) {
+                throw new BadRequestException('File is empty');
+            }
+
+            const chunks = this.chunkingService.chunk(extractedText, fileType);
+
+            for (const chunk of chunks) {
+                if (!chunk.text.trim()) continue;
+
+                const embedding = await this.embeddingService.embed(chunk.text);
+
+                await this.vectorDbService.upsert(
+                    randomUUID(),
+                    embedding,
+                    {
+                        userId,
+                        fileId: savedFile._id.toString(),
+                        fileName: savedFile.fileName,
+                        text: chunk.text,
+                        chunkIndex: chunk.metadata.chunkIndex,
+                        chunkType: chunk.metadata.chunkType,
+                        feature: chunk.metadata.feature,
+                        embeddingModel: 'all-MiniLM-L6-v2',
+                    },
+                );
+            }
+
+            await this.contentModel.create({
+                userId,
+                fileId: savedFile._id.toString(),
+                extractedText,
+            });
+
+            return {
+                message: 'File uploaded successfully',
+                fileId: savedFile._id,
+            };
+
+        } catch (error) {
+
+            console.error(`Upload processing failed for ${savedFile._id}:`, error);
+
+            await this.fileModel.deleteOne({ _id: savedFile._id });
+
+            throw new BadRequestException(`Failed to process file: ${error.message}`);
         }
 
-        const chunks = this.chunkingService.chunk(extractedText, fileType);
 
-        for (const chunk of chunks) {
-            if (!chunk.text.trim()) continue;
-
-            const embedding = await this.embeddingService.embed(chunk.text);
-
-            await this.vectorDbService.upsert(
-                randomUUID(),
-                embedding,
-                {
-                    userId,
-                    fileId: savedFile._id.toString(),
-                    fileName: savedFile.fileName,
-                    text: chunk.text,
-                    chunkIndex: chunk.metadata.chunkIndex,
-                    chunkType: chunk.metadata.chunkType,
-                    feature: chunk.metadata.feature,
-                    embeddingModel: 'all-MiniLM-L6-v2',
-                },
-            );
-        }
-
-        await this.contentModel.create({
-            userId,
-            fileId: savedFile._id.toString(),
-            extractedText,
-        });
-
-        return {
-            message: 'File uploaded successfully',
-            fileId: savedFile._id,
-        };
     }
 
     async getUserFiles(userId: string) {
@@ -106,6 +130,19 @@ export class FilesService {
             { _id: fileId, userId },
             { isArchived: false },
         );
+    }
+
+    async getArchivedFileIds(userId: string): Promise<string[]> {
+        const files = await this.fileModel.find(
+            { userId, isArchived: true },
+            { _id: 1 }
+        );
+
+        return files.map(file => file._id.toString());
+    }
+
+    async deleteFile(userId: string, fileId: string) {
+        await this.fileModel.deleteOne({ _id: fileId, userId });
     }
 }
 

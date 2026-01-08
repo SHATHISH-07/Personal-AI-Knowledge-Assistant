@@ -4,7 +4,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import logo from "/assets/favicon.ico";
 
-// Register GSAP Plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage = () => {
@@ -13,7 +12,6 @@ const LandingPage = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Hero Animation Timeline
       const tl = gsap.timeline();
 
       tl.from(".hero-badge", {
@@ -58,14 +56,13 @@ const LandingPage = () => {
           {
             y: 100,
             opacity: 0,
-            rotationX: 15, // 3D tilt effect entrance
+            rotationX: 15,
             duration: 1.2,
             ease: "power4.out",
           },
           "-=0.6"
         );
 
-      // 2. Tech Stack Pills (ScrollTrigger)
       gsap.fromTo(
         ".tech-pill",
         { y: 30, opacity: 0 },
@@ -77,8 +74,8 @@ const LandingPage = () => {
           ease: "back.out(1.7)",
           scrollTrigger: {
             trigger: ".tech-section",
-            start: "top 85%", // Triggers when top of section hits 85% of viewport height
-            toggleActions: "play none none reverse", // Replays if you scroll up and down
+            start: "top 85%",
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -100,7 +97,6 @@ const LandingPage = () => {
         }
       );
 
-      // 4. CTA Section (Fixed with fromTo)
       gsap.fromTo(
         ".cta-content",
         { scale: 0.9, opacity: 0 },
@@ -118,7 +114,7 @@ const LandingPage = () => {
       );
     }, mainRef);
 
-    return () => ctx.revert(); // Cleanup
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -126,7 +122,6 @@ const LandingPage = () => {
       ref={mainRef}
       className="min-h-screen bg-[#181818] text-zinc-100 font-sans selection:bg-indigo-500/30 overflow-x-hidden"
     >
-      {/* Background Grid */}
       <div
         className="fixed inset-0 z-0 pointer-events-none opacity-[0.05]"
         style={{
@@ -135,7 +130,6 @@ const LandingPage = () => {
         }}
       />
 
-      {/* Soft Ambient Glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-150 h-100 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none z-0" />
 
       {/* NAVBAR */}
@@ -273,7 +267,6 @@ const LandingPage = () => {
 
       {/* HERO SECTION */}
       <section className="relative z-10 pt-36 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center perspective-[1000px]">
-        {/* Status Badge */}
         <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 mb-8 border border-white/5 rounded-full bg-[#212121] shadow-xl backdrop-blur-sm">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -314,7 +307,6 @@ const LandingPage = () => {
         {/* DASHBOARD MOCKUP */}
         <div className="hero-dashboard relative w-full max-w-5xl group perspective-[1000px] px-2 md:px-0">
           <div className="relative w-full bg-[#212121] border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-transform duration-700 ease-out hover:-translate-y-2 hover:rotate-x-2">
-            {/* Header */}
             <div className="h-10 bg-[#1a1a1a] border-b border-white/5 flex items-center px-4 justify-between">
               <div className="flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-[#333]" />
@@ -328,7 +320,6 @@ const LandingPage = () => {
 
             {/* Body */}
             <div className="p-0 grid grid-cols-12 h-96 md:h-112.5 font-mono text-xs text-left">
-              {/* Sidebar - Hidden on mobile */}
               <div className="col-span-3 border-r border-white/5 bg-[#1c1c1c] p-5 hidden md:block">
                 <div className="text-[10px] text-zinc-500 font-bold mb-4 tracking-widest uppercase">
                   SOURCES
@@ -372,7 +363,6 @@ const LandingPage = () => {
                 <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-indigo-500/50 to-transparent" />
 
                 <div className="space-y-6">
-                  {/* Log Entry 1 */}
                   <div className="font-mono">
                     <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:21</span>
@@ -384,7 +374,6 @@ const LandingPage = () => {
                     </div>
                   </div>
 
-                  {/* Log Entry 2 */}
                   <div className="font-mono relative">
                     <div className="hidden md:block absolute left-[3.8rem] top-2 bottom-0 w-px bg-white/10"></div>
                     <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
@@ -396,7 +385,6 @@ const LandingPage = () => {
                     </div>
                   </div>
 
-                  {/* Log Entry 3 */}
                   <div className="font-mono">
                     <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:22</span>
@@ -413,7 +401,6 @@ const LandingPage = () => {
                     </div>
                   </div>
 
-                  {/* Log Entry 4 */}
                   <div id="poweredby" className="font-mono">
                     <div className="flex gap-3 text-zinc-500 mb-1 text-[10px] md:text-xs">
                       <span>14:02:23</span>
@@ -584,7 +571,6 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => (
-  // Added "feature-card" class selector for GSAP
   <div className="feature-card bg-[#212121]/70 p-8 rounded-2xl border border-white/5 hover:border-white/10 transition-all hover:-translate-y-2 hover:shadow-2xl group cursor-default">
     <div className="text-zinc-600 font-mono text-xs mb-4 group-hover:text-indigo-400 transition-colors">
       {number}
@@ -595,7 +581,6 @@ const FeatureCard = ({
 );
 
 const TechPill = ({ label, color }: { label: string; color: string }) => (
-  // Added "tech-pill" class selector for GSAP
   <div className="tech-pill flex items-center gap-2 px-4 py-2 bg-[#181818] border border-white/5 rounded-full text-zinc-300 text-sm font-mono hover:border-white/20 hover:bg-white/5 transition-all cursor-default">
     <div className={`w-2 h-2 rounded-full ${color}`}></div>
     {label}

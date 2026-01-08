@@ -172,8 +172,8 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                   key={i}
                   to="/ask"
                   onClick={() => {
-                    setMobileOpen(false); // Close mobile menu
-                    setInputPrompt(q); // Send text to input
+                    setMobileOpen(false);
+                    setInputPrompt(q);
                   }}
                   className="block truncate rounded-md px-2 py-1.5 text-xs
                      text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900

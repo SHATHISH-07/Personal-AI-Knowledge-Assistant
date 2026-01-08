@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { EmbeddingService } from "src/embedding/embedding.service";
+import { FilesService } from "src/files/files.service";
 import { GroqService } from "src/llm/llm.service";
 import { VectorDbService } from "src/vector-db/vector-db.service";
 
@@ -9,6 +10,7 @@ export class AskService {
         private embeddingService: EmbeddingService,
         private vectorDbService: VectorDbService,
         private groqService: GroqService,
+        private filesService: FilesService,
     ) { }
 
     async ask(question: string, userId: string) {
@@ -16,12 +18,16 @@ export class AskService {
             return { answer: "Invalid question", sources: [] };
         }
 
+        const archivedFileIds = await this.filesService.getArchivedFileIds(userId);
+
         const queryVector = await this.embeddingService.embed(question);
 
         const chunks = await this.vectorDbService.search(
             queryVector,
             userId,
-            5
+            5,
+            0.15,
+            archivedFileIds
         );
 
         if (!chunks.length) {

@@ -12,7 +12,6 @@ export interface AskResponse {
 }
 
 export interface ChatMessage {
-    question: string;
-    answer: string;
-    sources: Source[];
+    role: "user" | "assistant";
+    content: string;
 }

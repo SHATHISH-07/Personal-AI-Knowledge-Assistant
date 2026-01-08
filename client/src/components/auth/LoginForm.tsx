@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, Link } from "react-router-dom"; // Import Link
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const { loginUser } = useAuth();
@@ -18,6 +19,9 @@ const LoginForm = () => {
     try {
       await loginUser(email, password);
       navigate("/overview");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      toast.error("Invalid credentials");
     } finally {
       setLoading(false);
     }

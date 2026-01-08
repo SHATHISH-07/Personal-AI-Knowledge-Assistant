@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import Topbar from "./Topbar";
 import AppSidebar from "./Sidebar";
+import { useAuth } from "@/hooks/useAuth";
+import { useAskStore } from "@/store/chat.store";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -9,6 +11,15 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children }: AppLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const { user } = useAuth();
+  const { loadRecent } = useAskStore();
+
+  useEffect(() => {
+    if (user?._id) {
+      loadRecent(user._id);
+    }
+  }, [user, loadRecent]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#212121]">

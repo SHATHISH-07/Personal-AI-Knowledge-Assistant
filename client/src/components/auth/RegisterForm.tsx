@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { register } from "@/api/auth.api";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -19,6 +20,11 @@ const RegisterForm = () => {
     try {
       await register({ name, email, password });
       navigate("/verify-email");
+      toast.success(
+        "Registration successful - check your email for verification"
+      );
+    } catch (error) {
+      toast.error("Registration failed");
     } finally {
       setLoading(false);
     }

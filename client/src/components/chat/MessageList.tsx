@@ -1,26 +1,70 @@
-import { useAskStore } from "@/store/chat.store";
+import { useAskStore } from "@/store/chat.store"; // Import ChatMessage type
+import { useDashboardStore } from "@/store/dashboard.store";
+import { useAuth } from "@/hooks/useAuth";
 import clsx from "clsx";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Upload } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import type { ChatMessage } from "@/types/chat.type";
 
 const MessageList = () => {
-  const { messages } = useAskStore();
+  const { user } = useAuth();
+  const { messages, loadRecent } = useAskStore();
+  const { summary, fetchSummary } = useDashboardStore();
+  const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  useEffect(() => {
+    if (user?._id) {
+      loadRecent(user._id);
+    }
+    fetchSummary();
+  }, [user?._id, loadRecent, fetchSummary]);
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  if (summary && summary.totalFiles === 0) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
+        <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
+          Knowledge Base Empty
+        </h3>
+        <p className="text-zinc-500 dark:text-zinc-400 max-w-sm leading-relaxed mb-8">
+          You haven't uploaded any documents yet. Please add your knowledge base
+          files to start asking questions.
+        </p>
+        <button
+          onClick={() => navigate("/upload")}
+          className="flex items-center gap-2 text-sm font-medium px-6 py-2.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300 transition-colors"
+        >
+          <Upload className="w-4 h-4" />
+          Upload Documents
+        </button>
+      </div>
+    );
+  }
+
+  if (messages.length === 0) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
+        <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
+          Ready to Assist
+        </h3>
+        <p className="text-zinc-500 dark:text-zinc-400 max-w-sm leading-relaxed">
+          Your knowledge base is active. Ask any question below to get started.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-2 md:p-6 space-y-6 md:space-y-8 scroll-smooth custom-scrollbar">
-      {messages.map((msg, i) => {
+      {messages.map((msg: ChatMessage, i: number) => {
         const isAi = msg.role === "assistant";
 
         return (
@@ -79,7 +123,6 @@ const MessageList = () => {
           </div>
         );
       })}
-
       <div ref={messagesEndRef} />
     </div>
   );

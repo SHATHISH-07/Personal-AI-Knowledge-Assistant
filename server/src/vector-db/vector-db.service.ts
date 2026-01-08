@@ -41,8 +41,13 @@ export class VectorDbService implements OnModuleInit {
             field_name: 'userId',
             field_schema: 'keyword',
         });
-    }
 
+        await this.client.createPayloadIndex(this.collection, {
+            field_name: 'fileId',
+            field_schema: 'keyword',
+        });
+
+    }
 
     async upsert(
         id: string,
@@ -71,20 +76,33 @@ export class VectorDbService implements OnModuleInit {
         userId: string,
         limit = 5,
         scoreThreshold = 0.15,
+        excludedFileIds: string[] = [],
     ) {
+
+        const filter: any = {
+            must: [
+                {
+                    key: 'userId',
+                    match: { value: userId },
+                },
+            ],
+        };
+
+        if (excludedFileIds.length > 0) {
+            filter.must_not = [
+                {
+                    key: 'fileId',
+                    match: { any: excludedFileIds },
+                },
+            ];
+        }
+
         const results = await this.client.search(this.collection, {
             vector,
             limit,
             with_payload: true,
             with_vector: false,
-            filter: {
-                must: [
-                    {
-                        key: 'userId',
-                        match: { value: userId },
-                    },
-                ],
-            },
+            filter: filter,
         });
 
         return results

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth.store";
 import AppRoutes from "@/routes/AppRoutes";
+import { Toaster } from "sonner";
 
 function App() {
   const initializeAuth = useAuthStore((s) => s.initializeAuth);
@@ -26,7 +27,12 @@ function App() {
     };
   }, []);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <AppRoutes />
+      <Toaster position="top-center" richColors theme="dark" />
+    </>
+  );
 }
 
 export default App;

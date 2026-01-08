@@ -31,3 +31,7 @@ export const archiveFile = (fileId: string) => {
 export const unarchiveFile = (fileId: string) => {
     return api.patch(`/files/${fileId}/unarchive`);
 };
+
+export const deleteFile = (fileId: string) => {
+    return api.delete(`/files/${fileId}`);
+};

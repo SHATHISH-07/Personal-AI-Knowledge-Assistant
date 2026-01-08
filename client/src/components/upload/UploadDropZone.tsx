@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { UploadCloud, FileIcon } from "lucide-react";
 import type { UploadItem, UploadStatus } from "@/types/upload.type";
 import UploadRow from "./UploadRow";
+import { toast } from "sonner";
 
 const UploadDropZone = () => {
   const [items, setItems] = useState<UploadItem[]>([]);
@@ -12,7 +13,6 @@ const UploadDropZone = () => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // --- Handlers ---
   const onFilesSelected = (files: FileList | null) => {
     if (!files) return;
 
@@ -73,8 +73,10 @@ const UploadDropZone = () => {
       try {
         await uploadFile(item.file);
         updateStatus(item.id, "COMPLETED");
+        toast.success("File uploaded successfully");
       } catch (err) {
         updateStatus(item.id, "FAILED", "Upload failed");
+        toast.error("Upload failed");
       }
     }
 
@@ -108,7 +110,6 @@ const UploadDropZone = () => {
           onChange={(e) => onFilesSelected(e.target.files)}
         />
 
-        {/* Icon Circle */}
         <div
           className={cn(
             "rounded-full p-4 transition-colors",

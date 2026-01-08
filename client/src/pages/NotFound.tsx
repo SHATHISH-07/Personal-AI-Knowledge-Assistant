@@ -8,12 +8,10 @@ const NotFound = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-zinc-50 px-4 text-center dark:bg-[#181818]">
       <div className="flex flex-col items-center space-y-6 max-w-md">
-        {/* Icon Circle */}
         <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-zinc-200 dark:bg-[#212121] dark:ring-white/5">
           <FileQuestion className="h-10 w-10 text-zinc-400 dark:text-zinc-500" />
         </div>
 
-        {/* Text Content */}
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-4xl">
             Page not found
@@ -23,7 +21,6 @@ const NotFound = () => {
           </p>
         </div>
 
-        {/* Single Action Button */}
         <Button
           size="lg"
           onClick={() => navigate(-1)}
@@ -34,7 +31,6 @@ const NotFound = () => {
         </Button>
       </div>
 
-      {/* Subtle Footer */}
       <div className="absolute bottom-8 text-[10px] font-mono uppercase tracking-widest text-zinc-300 dark:text-zinc-700">
         404 Error
       </div>

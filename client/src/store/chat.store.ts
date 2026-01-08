@@ -6,8 +6,11 @@ export interface ChatMessage {
     content: string;
 }
 
-const HISTORY_KEY = "openluma_recent_questions";
-const MESSAGES_KEY = "openluma_chat_messages";
+
+const getKeys = (userId: string) => ({
+    HISTORY_KEY: `openluma_recent_questions_${userId}`,
+    MESSAGES_KEY: `openluma_chat_messages_${userId}`,
+});
 
 interface AskState {
     messages: ChatMessage[];
@@ -16,9 +19,10 @@ interface AskState {
     inputPrompt: string;
     setInputPrompt: (val: string) => void;
 
-    ask: (question: string) => Promise<void>;
-    loadRecent: () => void;
-    clearChat: () => void;
+
+    ask: (userId: string, question: string) => Promise<void>;
+    loadRecent: (userId: string) => void;
+    clearChat: (userId: string) => void;
 }
 
 export const useAskStore = create<AskState>((set, get) => ({
@@ -29,7 +33,10 @@ export const useAskStore = create<AskState>((set, get) => ({
 
     setInputPrompt: (val) => set({ inputPrompt: val }),
 
-    loadRecent: () => {
+    loadRecent: (userId) => {
+        if (!userId) return;
+        const { HISTORY_KEY, MESSAGES_KEY } = getKeys(userId);
+
         const storedHistory = localStorage.getItem(HISTORY_KEY);
         const recentQuestions = storedHistory ? JSON.parse(storedHistory) : [];
 
@@ -39,8 +46,12 @@ export const useAskStore = create<AskState>((set, get) => ({
         set({ recentQuestions, messages });
     },
 
-    ask: async (question) => {
+    ask: async (userId, question) => {
+        if (!userId) return;
+        const { HISTORY_KEY, MESSAGES_KEY } = getKeys(userId);
+
         set({ loading: true });
+
 
         const userMsg: ChatMessage = { role: "user", content: question };
 
@@ -48,19 +59,25 @@ export const useAskStore = create<AskState>((set, get) => ({
             messages: [...state.messages, userMsg],
         }));
 
-        const prev = get().recentQuestions.filter((q) => q !== question);
+
+        const currentRecent = get().recentQuestions;
+        const prev = currentRecent.filter((q) => q !== question);
         const updatedQuestions = [question, ...prev].slice(0, 10);
+
         localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedQuestions));
         set({ recentQuestions: updatedQuestions });
 
         try {
+
             const res = await askAI(question);
             const botMsg: ChatMessage = { role: "assistant", content: res.data.answer };
+
 
             set((state) => {
                 const newMessages = [...state.messages, botMsg];
 
-                const messagesToSave = newMessages.slice(-10);
+
+                const messagesToSave = newMessages.slice(-20);
                 localStorage.setItem(MESSAGES_KEY, JSON.stringify(messagesToSave));
 
                 return {
@@ -74,7 +91,10 @@ export const useAskStore = create<AskState>((set, get) => ({
         }
     },
 
-    clearChat: () => {
+    clearChat: (userId) => {
+        if (!userId) return;
+        const { MESSAGES_KEY } = getKeys(userId);
+
         localStorage.removeItem(MESSAGES_KEY);
         set({ messages: [] });
     },

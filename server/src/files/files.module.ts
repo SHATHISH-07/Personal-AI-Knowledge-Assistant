@@ -21,6 +21,7 @@ import { VectorDbModule } from 'src/vector-db/vector-db.module';
     ChunkingModule,
     EmbeddingModule,
     VectorDbModule
-  ]
+  ],
+  exports: [FilesService],
 })
 export class FilesModule { }

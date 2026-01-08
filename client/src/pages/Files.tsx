@@ -12,7 +12,6 @@ const Files = () => {
     fetchFiles();
   }, [fetchFiles]);
 
-  // 🔍 Filter Logic: Case-insensitive search
   const filteredFiles = files.filter((file) =>
     file.fileName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -66,7 +65,6 @@ const Files = () => {
         </div>
       </div>
 
-      {/* Pass the FILTERED list, not the raw list */}
       {filteredFiles.length > 0 ? (
         <FileList files={filteredFiles} />
       ) : (

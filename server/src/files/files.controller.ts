@@ -42,4 +42,9 @@ export class FilesController {
     unarchive(@Req() req, @Param('fileId') fileId: string) {
         return this.filesService.unarchiveFile(req.user.userId, fileId);
     }
+
+    @Patch(':fileId/delete')
+    delete(@Req() req, @Param('fileId') fileId: string) {
+        return this.filesService.deleteFile(req.user.userId, fileId);
+    }
 }

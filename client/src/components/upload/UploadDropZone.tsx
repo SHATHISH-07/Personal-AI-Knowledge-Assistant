@@ -126,7 +126,7 @@ const UploadDropZone = () => {
             Click to upload or drag and drop
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Support for code files (.js, .ts, .py) and text documents.
+            Support for code files (.js, .ts, .py), text documents, docx, pdf.
           </p>
         </div>
       </div>

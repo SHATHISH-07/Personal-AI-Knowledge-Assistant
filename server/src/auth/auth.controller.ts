@@ -14,9 +14,13 @@ import type { Response } from "express";
 @Controller('auth')
 export class AuthController {
 
+  private readonly isProd: boolean;
+
   constructor(private readonly authService: AuthService,
     private configService: ConfigService
-  ) { }
+  ) {
+    this.isProd = this.configService.get('NODE_ENV') === 'production';
+  }
 
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
@@ -217,14 +221,14 @@ export class AuthController {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
     });
 
     return res.redirect(redirectUrl);
@@ -240,14 +244,14 @@ export class AuthController {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
     });
 
     return { message: "Login successful" };
@@ -282,15 +286,15 @@ export class AuthController {
   ) {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
       path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: this.isProd,
+      sameSite: this.isProd ? "none" : "lax",
     });
 
     return this.authService.logout(req.user.userId);

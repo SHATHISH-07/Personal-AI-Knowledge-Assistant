@@ -58,10 +58,10 @@ const AskInput = () => {
 
   return (
     <div className="w-full px-4">
-      <div className="mx-auto max-w-3xl relative">
+      <div className="mx-auto max-w-3xl relative ">
         <div
           className={clsx(
-            "relative flex items-end gap-2 rounded-xl p-3 shadow-sm transition-all border",
+            "relative flex items-center gap-2 rounded-xl p-3 shadow-sm transition-all border",
             "bg-gray-500/10 border-zinc-200 dark:bg-[#181818] dark:border-white/10",
             "focus-within:ring-2 focus-within:ring-zinc-900/10 dark:focus-within:ring-zinc-600/50",
             loading && "opacity-80 cursor-not-allowed"
@@ -75,7 +75,7 @@ const AskInput = () => {
             onChange={(e) => setValue(e.target.value)}
             placeholder="Ask anything..."
             className={clsx(
-              "min-h-6 max-h-50 w-full resize-none border-0 outline-none p-0 px-2 py-1 text-base scrollbar-hide bg-transparent",
+              "min-h-12 max-h-50 w-full resize-none border-0 outline-none p-0 px-2 py-1 text-base scrollbar-hide bg-transparent",
               "text-zinc-900 placeholder:text-zinc-400 dark:text-zinc-200 dark:placeholder:text-zinc-500"
             )}
             onKeyDown={(e) => {

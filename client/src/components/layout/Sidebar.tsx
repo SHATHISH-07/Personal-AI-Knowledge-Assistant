@@ -10,7 +10,7 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import favicon from "/assets/favicon.ico";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -27,16 +27,34 @@ const navItems = [
 interface SidebarProps {
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
+  onWidthChange?: (width: number) => void;
 }
 
-const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
+const AppSidebar = ({
+  mobileOpen,
+  setMobileOpen,
+  onWidthChange,
+}: SidebarProps) => {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+
+  const sidebarRef = useRef<HTMLElement>(null);
 
   const isCollapsed = mobileOpen ? false : desktopCollapsed;
 
   const { user, logoutUser } = useAuth();
   const { setTheme } = useTheme();
   const { recentQuestions, setInputPrompt } = useAskStore();
+
+  useLayoutEffect(() => {
+    if (!sidebarRef.current || !onWidthChange) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      onWidthChange(entry.contentRect.width);
+    });
+
+    observer.observe(sidebarRef.current);
+    return () => observer.disconnect();
+  }, [onWidthChange]);
 
   return (
     <>
@@ -50,6 +68,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
 
       {/* SIDEBAR CONTAINER */}
       <aside
+        ref={sidebarRef}
         className={clsx(
           "fixed md:sticky top-0 left-0 z-50 h-dvh transition-all duration-300 ease-in-out border-r flex flex-col",
           isCollapsed

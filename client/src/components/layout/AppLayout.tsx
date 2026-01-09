@@ -12,6 +12,8 @@ interface AppLayoutProps {
 const AppLayout = ({ children }: AppLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const [sidebarWidth, setSidebarWidth] = useState(0);
+
   const { user } = useAuth();
   const { loadRecent } = useAskStore();
 
@@ -23,11 +25,22 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#212121]">
-      <AppSidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+      <AppSidebar
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+        onWidthChange={setSidebarWidth}
+      />
 
       <div className="flex flex-1 flex-col">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 text-center overflow-y-auto p-5 ">
+        <main
+          className="flex-1 overflow-y-auto p-5 md:[--sidebar-width:0px]"
+          style={
+            window.innerWidth >= 768
+              ? { ["--sidebar-width" as string]: `${sidebarWidth}px` }
+              : undefined
+          }
+        >
           {children}
         </main>
       </div>

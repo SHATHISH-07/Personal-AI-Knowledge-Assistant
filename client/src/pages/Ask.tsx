@@ -16,13 +16,22 @@ const Ask = () => {
   }, [user, loadRecent]);
 
   return (
-    <div className="flex flex-col  w-full overflow-hidden relative">
+    <div className="flex flex-col w-full overflow-hidden relative">
       <div className="flex-1 overflow-y-auto w-full">
         <MessageList />
       </div>
 
-      <div className="w-full shrink-0 pb-2 md:pb-4">
-        <AskInput />
+      <div
+        className="
+    fixed bottom-0 left-0 z-20 pb-4
+    w-full
+    md:left-(--sidebar-width)
+    md:w-[calc(100%-var(--sidebar-width))]
+  "
+      >
+        <div className="mx-auto max-w-4xl px-4">
+          <AskInput />
+        </div>
       </div>
     </div>
   );

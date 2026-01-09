@@ -25,20 +25,22 @@ const AskInput = () => {
 
   useEffect(() => {
     if (inputPrompt) {
-      setValue(inputPrompt);
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-            textareaRef.current.style.height = `${Math.min(
-              textareaRef.current.scrollHeight,
-              200
-            )}px`;
-          }
-        }, 0);
-      }
-      setInputPrompt("");
+      const t = setTimeout(() => {
+        setValue(inputPrompt);
+
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          textareaRef.current.style.height = "auto";
+          textareaRef.current.style.height = `${Math.min(
+            textareaRef.current.scrollHeight,
+            200
+          )}px`;
+        }
+
+        setInputPrompt("");
+      }, 0);
+
+      return () => clearTimeout(t);
     }
   }, [inputPrompt, setInputPrompt]);
 

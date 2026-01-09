@@ -10,7 +10,7 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import favicon from "/assets/favicon.ico";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 import { useAuth } from "@/hooks/useAuth";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -30,18 +30,13 @@ interface SidebarProps {
 }
 
 const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+
+  const isCollapsed = mobileOpen ? false : desktopCollapsed;
+
   const { user, logoutUser } = useAuth();
-
   const { setTheme } = useTheme();
-
   const { recentQuestions, setInputPrompt } = useAskStore();
-
-  useEffect(() => {
-    if (mobileOpen) {
-      setCollapsed(false);
-    }
-  }, [mobileOpen]);
 
   return (
     <>
@@ -56,8 +51,8 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
       {/* SIDEBAR CONTAINER */}
       <aside
         className={clsx(
-          "fixed md:sticky top-0 left-0 z-50 h-screen transition-all duration-300 ease-in-out border-r flex flex-col",
-          collapsed
+          "fixed md:sticky top-0 left-0 z-50 h-dvh transition-all duration-300 ease-in-out border-r flex flex-col",
+          isCollapsed
             ? "w-20 bg-zinc-50 dark:bg-[#212121]"
             : "w-64 bg-zinc-50 dark:bg-[#181818]",
           mobileOpen
@@ -68,15 +63,15 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
         {/* HEADER */}
         <div
           className={clsx(
-            "h-16 flex items-center px-4",
-            collapsed ? "justify-center" : "justify-between"
+            "h-16 flex items-center px-4 shrink-0", // Added shrink-0
+            isCollapsed ? "justify-center" : "justify-between"
           )}
         >
-          {collapsed ? (
+          {isCollapsed ? (
             // === COLLAPSED STATE (Desktop Only) ===
             <button
-              onClick={() => setCollapsed(false)}
-              className="hidden md:flex relative group items-center justify-center w-10 h-10 rounded-md hover:bg-zinc-200/50 dark:hover:bg-white/10 transition-colors  cursor-w-resize"
+              onClick={() => setDesktopCollapsed(false)}
+              className="hidden md:flex relative group items-center justify-center w-10 h-10 rounded-md hover:bg-zinc-200/50 dark:hover:bg-white/10 transition-colors cursor-e-resize"
             >
               <img
                 src={favicon}
@@ -98,7 +93,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
 
               {/* Desktop Collapse Toggle */}
               <button
-                onClick={() => setCollapsed(true)}
+                onClick={() => setDesktopCollapsed(true)}
                 className={clsx(
                   "hidden md:flex p-1.5 rounded-md transition-colors cursor-w-resize",
                   "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-200/50",
@@ -119,87 +114,88 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
           )}
         </div>
 
-        {/* NAV */}
-        <nav className="flex-1 flex flex-col p-3 overflow-y-auto overflow-x-hidden">
-          {navItems.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end
-              title={collapsed ? label : undefined}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                clsx(
-                  "flex items-center rounded-lg transition-all duration-200 group relative",
-                  collapsed
-                    ? "justify-center h-12 w-12 mx-auto"
-                    : "h-11 px-3 gap-3",
-                  isActive
-                    ? " text-gray-800 dark:text-gray-200 font-medium"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-100"
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon
-                    className={clsx(
-                      "shrink-0 transition-colors",
-                      collapsed ? "w-5 h-5" : "w-5 h-5",
-                      isActive
-                        ? "text-gray-600 dark:text-gray-200"
-                        : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100"
-                    )}
-                  />
+        {/* SCROLLABLE CONTENT AREA (Nav + Recents) */}
+        {/* This wrapper ensures these two sections share the scrolling space, pushing the footer down */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar flex flex-col gap-4 p-3">
+          {/* NAV LINKS */}
+          <nav className="flex flex-col gap-1">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end
+                title={isCollapsed ? label : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  clsx(
+                    "flex items-center rounded-lg transition-all duration-200 group relative",
+                    isCollapsed
+                      ? "justify-center h-12 w-12 mx-auto"
+                      : "h-11 px-3 gap-3",
+                    isActive
+                      ? " text-gray-800 dark:text-gray-200 font-medium bg-zinc-200/50 dark:bg-white/5"
+                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-100"
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      className={clsx(
+                        "shrink-0 transition-colors",
+                        isCollapsed ? "w-5 h-5" : "w-5 h-5",
+                        isActive
+                          ? "text-gray-900 dark:text-gray-100"
+                          : "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100"
+                      )}
+                    />
+                    {!isCollapsed && <span className="truncate">{label}</span>}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
 
-                  {!collapsed && <span className="truncate">{label}</span>}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* RECENT QUESTIONS */}
-        {!collapsed && recentQuestions.length > 0 && (
-          <div className="px-3 pb-3">
-            <p className="mb-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-              Recent Questions
-            </p>
-
-            <div className="space-y-1">
-              {recentQuestions.map((q, i) => (
-                <NavLink
-                  key={i}
-                  to="/ask"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setInputPrompt(q);
-                  }}
-                  className="block truncate rounded-md px-2 py-1.5 text-xs
-                     text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900
-                     dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-zinc-100"
-                  title={q}
-                >
-                  {q}
-                </NavLink>
-              ))}
+          {/* RECENT QUESTIONS */}
+          {!isCollapsed && recentQuestions.length > 0 && (
+            <div className="pt-2">
+              <p className="px-2 mb-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Recent Questions
+              </p>
+              <div className="space-y-0.5">
+                {recentQuestions.map((q, i) => (
+                  <NavLink
+                    key={i}
+                    to="/ask"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setInputPrompt(q);
+                    }}
+                    className="block truncate rounded-md px-2 py-2 text-xs
+                      text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900
+                      dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-100 transition-colors"
+                    title={q}
+                  >
+                    {q}
+                  </NavLink>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* FOOTER */}
-        <div className="p-4 ">
+        {/* FOOTER (Fixed at bottom) */}
+        <div className="p-4 border-t border-zinc-200 dark:border-white/5 shrink-0 bg-zinc-50 dark:bg-[#181818]">
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <button
                 className={clsx(
                   "group flex items-center w-full rounded-lg p-2 transition-colors outline-none",
                   "hover:bg-zinc-200/50 dark:hover:bg-white/10",
-                  collapsed ? "justify-center" : "justify-between"
+                  isCollapsed ? "justify-center" : "justify-between"
                 )}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {/* Avatar */}
                   <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden border border-zinc-200 dark:border-white/10">
                     {user?.profilePictureUrl ? (
                       <img
@@ -212,8 +208,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                     )}
                   </div>
 
-                  {/* Text Info */}
-                  {!collapsed && (
+                  {!isCollapsed && (
                     <div className="flex flex-col text-left min-w-0">
                       <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                         {user?.name ?? "User"}
@@ -225,8 +220,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                   )}
                 </div>
 
-                {/* Chevron */}
-                {!collapsed && (
+                {!isCollapsed && (
                   <ChevronsUpDown className="w-4 h-4 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300" />
                 )}
               </button>
@@ -262,36 +256,21 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
 
                 <DropdownMenu.Item
                   onSelect={() => setTheme("light")}
-                  className="
-    flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm
-    text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900
-    dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white
-    focus:bg-zinc-100 dark:focus:bg-zinc-800
-  "
+                  className="flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white focus:bg-zinc-100 dark:focus:bg-zinc-800"
                 >
                   Light
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Item
                   onSelect={() => setTheme("dark")}
-                  className="
-    flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm
-    text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900
-    dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white
-    focus:bg-zinc-100 dark:focus:bg-zinc-800
-  "
+                  className="flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white focus:bg-zinc-100 dark:focus:bg-zinc-800"
                 >
                   Dark
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Item
                   onSelect={() => setTheme("system")}
-                  className="
-    flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm
-    text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900
-    dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white
-    focus:bg-zinc-100 dark:focus:bg-zinc-800
-  "
+                  className="flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white focus:bg-zinc-100 dark:focus:bg-zinc-800"
                 >
                   System
                 </DropdownMenu.Item>

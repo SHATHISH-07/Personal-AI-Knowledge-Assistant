@@ -506,53 +506,45 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="px-6 py-12 bg-[#181818] border-t border-white/5 text-lg">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <img src={logo} alt="OL" className="w-6 h-6 opacity-70" />
+      <footer className="w-full bg-[#181818] border-t border-white/5 pt-12 pb-8 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 md:gap-0">
+            {/* 1. Brand & Description */}
+            <div className="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/5">
+                  <img src={logo} alt="OL" className="w-5 h-5 opacity-80" />
+                </div>
+                <h1 className="text-xl font-bold tracking-tight text-white">
+                  OpenLuma
+                </h1>
               </div>
-              <h1 className="text-lg font-bold tracking-tight text-white">
-                OpenLuma
-              </h1>
+              <p className="text-zinc-500 text-sm leading-relaxed max-w-62.5">
+                A Full-Stack RAG Knowledge System. <br />
+                Building the future of memory.
+              </p>
+              <p className="text-zinc-600 text-xs font-mono">Salem, India.</p>
             </div>
-            <div className="text-zinc-500 max-w-xs leading-relaxed text-sm md:text-base">
-              A Full-Stack RAG Knowledge System. <br />
-              Salem, India.
+
+            {/* 2. Navigation Links */}
+            <div className="flex flex-col items-center md:items-end gap-6">
+              <nav className="flex flex-wrap justify-center gap-6 md:gap-8">
+                <FooterLink href="https://shathish2004.github.io/Shathish-Portfolio/">
+                  CREATOR
+                </FooterLink>
+                <FooterLink href="https://github.com/SHATHISH-07/Personal-AI-Knowledge-Assistant">
+                  GITHUB
+                </FooterLink>
+                <FooterLink href="https://www.linkedin.com/in/shathish-kumaran/">
+                  LINKEDIN
+                </FooterLink>
+              </nav>
+
+              {/* 3. Copyright (Aligned with links on desktop) */}
+              <div className="text-zinc-600 font-mono text-xs md:text-sm mt-2">
+                © {new Date().getFullYear()} OPENLUMA. All rights reserved.
+              </div>
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-8 text-zinc-500 font-mono text-sm md:text-lg">
-            <a
-              href="https://shathish2004.github.io/Shathish-Portfolio/"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white transition"
-            >
-              CREATOR
-            </a>
-            <a
-              href="https://github.com/SHATHISH-07/Personal-AI-Knowledge-Assistant"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white transition"
-            >
-              GITHUB
-            </a>
-            <a
-              href="https://www.linkedin.com/in/shathish-kumaran/"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white transition"
-            >
-              LINKEDIN
-            </a>
-          </div>
-
-          <div className="text-zinc-600 font-mono text-sm md:text-lg w-full md:w-auto text-left md:text-right">
-            © {new Date().getFullYear()} OPENLUMA.
           </div>
         </div>
       </footer>
@@ -585,6 +577,17 @@ const TechPill = ({ label, color }: { label: string; color: string }) => (
     <div className={`w-2 h-2 rounded-full ${color}`}></div>
     {label}
   </div>
+);
+
+const FooterLink = ({ href, children }: { href: string; children: string }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noreferrer"
+    className="text-sm font-mono text-zinc-500 hover:text-white transition-colors duration-200 tracking-wide"
+  >
+    {children}
+  </a>
 );
 
 export default LandingPage;

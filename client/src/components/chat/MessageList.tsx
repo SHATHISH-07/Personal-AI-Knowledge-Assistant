@@ -63,7 +63,7 @@ const MessageList = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-2 md:p-6 space-y-6 md:space-y-8 scroll-smooth custom-scrollbar">
+    <div className="flex-1 w-full overflow-y-auto p-2 md:p-6 space-y-6 md:space-y-8 scroll-smooth custom-scrollbar">
       {messages.map((msg: ChatMessage, i: number) => {
         const isAi = msg.role === "assistant";
 

@@ -114,8 +114,6 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
           )}
         </div>
 
-        {/* SCROLLABLE CONTENT AREA (Nav + Recents) */}
-        {/* This wrapper ensures these two sections share the scrolling space, pushing the footer down */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar flex flex-col gap-4 p-3">
           {/* NAV LINKS */}
           <nav className="flex flex-col gap-1">
@@ -185,7 +183,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
         </div>
 
         {/* FOOTER (Fixed at bottom) */}
-        <div className="p-4 border-t border-zinc-200 dark:border-white/5 shrink-0 bg-zinc-50 dark:bg-[#181818]">
+        <div className="p-4 shrink-0">
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <button
@@ -196,7 +194,7 @@ const AppSidebar = ({ mobileOpen, setMobileOpen }: SidebarProps) => {
                 )}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden border border-zinc-200 dark:border-white/10">
+                  <div className="w-8 h-8 rounded-full bg-black dark:bg-[#181818] flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden border border-zinc-200 dark:border-white/10">
                     {user?.profilePictureUrl ? (
                       <img
                         src={user.profilePictureUrl}

@@ -30,7 +30,7 @@ const MessageList = () => {
 
   if (summary && summary.totalFiles === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
+      <div className="flex-1 h-130 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
         <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
           Knowledge Base Empty
         </h3>
@@ -51,7 +51,7 @@ const MessageList = () => {
 
   if (messages.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
+      <div className="flex-1 h-130  flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-500">
         <h3 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
           Ready to Assist
         </h3>

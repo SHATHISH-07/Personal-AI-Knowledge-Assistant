@@ -17,12 +17,13 @@ const Ask = () => {
 
   return (
     <div className="flex flex-col w-full overflow-hidden relative">
-      <div className="flex-1 overflow-y-auto w-full">
+      <div className="flex-1 overflow-y-auto w-full pb-18 md:pb-15">
         <MessageList />
       </div>
 
       <div
         className="
+        bg-zinc-50 dark:bg-[#212121]
     fixed bottom-0 left-0 z-20 pb-4
     w-full
     md:left-(--sidebar-width)

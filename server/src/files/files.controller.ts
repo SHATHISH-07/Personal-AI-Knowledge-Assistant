@@ -1,3 +1,4 @@
+import type { Express } from 'express';
 import { Body, Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { FilesService } from "./files.service";

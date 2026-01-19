@@ -1,3 +1,4 @@
+import type { Express } from 'express'
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ContentSource, ContentSourceDocument } from 'src/content-source/schemas/content-source.schema';
 import { Model } from 'mongoose';

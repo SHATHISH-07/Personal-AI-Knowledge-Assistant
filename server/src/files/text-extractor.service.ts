@@ -1,3 +1,4 @@
+import type { Express } from 'express'
 import * as mammoth from 'mammoth';
 import { PDFParse } from 'pdf-parse';
 

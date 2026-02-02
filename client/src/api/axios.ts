@@ -19,6 +19,7 @@ api.interceptors.response.use(
             "/auth/register",
             "/auth/google",
             "/auth/verify",
+            "/auth/refresh",
         ];
 
         const isPublicEndpoint = publicEndpoints.some((endpoint) =>

@@ -9,13 +9,14 @@ import { Bot, Upload, Copy, Check } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ChatMessage } from "@/types/chat.type";
+import { useFileStore } from "@/store/file.store";
 
 const extractText = (node: ReactNode): string => {
   if (typeof node === "string") return node;
   if (Array.isArray(node)) return node.map(extractText).join("");
   if (typeof node === "object" && node !== null && "props" in node) {
     return extractText(
-      (node as { props: { children: ReactNode } }).props.children
+      (node as { props: { children: ReactNode } }).props.children,
     );
   }
   return "";
@@ -80,6 +81,12 @@ const MessageList = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const { files, loading, fetchFiles } = useFileStore();
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
   useEffect(() => {
     if (user?._id) loadRecent(user._id);
     fetchSummary();
@@ -112,15 +119,35 @@ const MessageList = () => {
     );
   }
 
-  if (messages.length === 0) {
+  if (messages.length === 0 && !loading) {
     return (
-      <div className="flex h-full flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in-95 duration-500">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800/50">
-          <Bot className="h-6 w-6 text-zinc-400" />
+      <div className="flex h-full flex-col items-center justify-center gap-y-4 p-6 text-center animate-in fade-in zoom-in-95 duration-500">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 shadow-sm dark:bg-zinc-800/50">
+          <Bot className="h-10 w-10 text-zinc-400" />
         </div>
-        <h3 className="text-base font-medium text-zinc-900 dark:text-zinc-100">
-          How can I help you today?
-        </h3>
+
+        <div className="space-y-1">
+          <h1 className="text-2xl font-medium text-zinc-900 dark:text-zinc-100">
+            How can I help you today?
+          </h1>
+          <p className="text-lg text-zinc-500 dark:text-zinc-400">
+            Ask a question or start a conversation
+          </p>
+        </div>
+
+        {files.length > 0 && (
+          <ul className="mt-2 flex flex-col justify-start gap-2">
+            {files.slice(0, 3).map((file) => (
+              <li
+                key={file._id}
+                className="flex max-w-50 items-center gap-2 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-md font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300"
+              >
+                <span className="shrink-0 text-zinc-400">📄</span>
+                <span className="truncate">{file.fileName}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     );
   }
@@ -136,26 +163,26 @@ const MessageList = () => {
               key={i}
               className={clsx(
                 "flex w-full gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300",
-                isAi ? "justify-start" : "justify-end"
+                isAi ? "justify-start" : "justify-end",
               )}
             >
               {/* Avatar - Hidden on mobile to save space */}
-              {isAi && (
+              {/* {isAi && (
                 <div className="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-800 mt-0.5">
                   <Bot className="h-4 w-4 text-zinc-600 dark:text-zinc-300" />
                 </div>
-              )}
+              )} */}
 
               {/* Message Bubble Wrapper */}
               <div
                 className={clsx(
                   "relative min-w-0 max-w-full",
-                  isAi ? "w-full" : "max-w-[90%] sm:max-w-[80%]"
+                  isAi ? "w-full" : "max-w-[90%] sm:max-w-[80%]",
                 )}
               >
                 {isAi ? (
                   // --- BOT MESSAGE ---
-                  <div className="prose prose-zinc dark:prose-invert max-w-none w-full break-words text-[15px] leading-7">
+                  <div className="prose prose-zinc dark:prose-invert max-w-none w-full wrap-break-word text-[15px] leading-7">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeHighlight]}
@@ -229,7 +256,7 @@ const MessageList = () => {
                   </div>
                 ) : (
                   // --- USER MESSAGE ---
-                  <div className="inline-block rounded-2xl rounded-tr-sm bg-zinc-100 px-5 py-2.5 text-[15px] font-medium text-zinc-900 shadow-sm dark:bg-[#2f2f2f] dark:text-zinc-100 break-words">
+                  <div className="inline-block rounded-2xl rounded-tr-sm bg-zinc-100 px-5 py-2.5 text-[15px] font-medium text-zinc-900 shadow-sm dark:bg-[#2f2f2f] dark:text-zinc-100 wrap-break-word">
                     {msg.content}
                   </div>
                 )}

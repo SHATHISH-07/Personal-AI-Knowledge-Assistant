@@ -270,4 +270,4 @@ GET /health/ready
 
 ## Summary
 
-The Personal AI Knowledge Assistant is a secure, AI-powered system that enables users to manage and query their own private knowledge base. By combining MongoDB Atlas, Qdrant Cloud, and a Retrieval-Augmented Generation architecture, the application delivers accurate, context-aware AI responses while maintaining strict data privacy and isolation.
+The Personal AI Knowledge Assistant is a secure, AI-powered system that enables users to manage and query their own private knowledge base. By combining MongoDB Atlas, Qdrant Cloud, and a Retrieval-Augmented Generation architecture, the application delivers accurate, context-aware AI responses while maintaining strict data privacy and isolation and aslo used OAuth for authentication.

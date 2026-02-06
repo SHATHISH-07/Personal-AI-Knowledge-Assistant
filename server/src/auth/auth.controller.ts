@@ -14,13 +14,10 @@ import type { Response } from "express";
 @Controller('auth')
 export class AuthController {
 
-  private readonly isProd: boolean;
 
   constructor(private readonly authService: AuthService,
     private configService: ConfigService
-  ) {
-    this.isProd = this.configService.get('NODE_ENV') === 'production';
-  }
+  ) { }
 
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
@@ -219,17 +216,15 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.handleGoogleUser(req.user);
 
-    res.cookie("accessToken", accessToken, {
+    const cookieOptions = {
       httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
-    });
+      secure: true,
+      sameSite: "none" as const,
+      path: "/",
+    };
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
-    });
+    res.cookie("accessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, cookieOptions);
 
     return res.redirect(redirectUrl);
   }
@@ -242,17 +237,15 @@ export class AuthController {
     const { accessToken, refreshToken } =
       await this.authService.login(loginDto);
 
-    res.cookie("accessToken", accessToken, {
+    const cookieOptions = {
       httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
-    });
+      secure: true,
+      sameSite: "none" as const,
+      path: "/",
+    };
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
-    });
+    res.cookie("accessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, cookieOptions);
 
     return { message: "Login successful" };
   }
@@ -302,15 +295,16 @@ export class AuthController {
   ) {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
     });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: this.isProd,
-      sameSite: this.isProd ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
+      path: "/",
     });
 
     return this.authService.logout(req.user.userId);

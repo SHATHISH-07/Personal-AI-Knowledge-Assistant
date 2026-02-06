@@ -56,7 +56,7 @@ export class AuthService {
         );
     }
 
-    async refreshTokens(refreshToken: string, res: Response) {
+    async refreshTokens(refreshToken: string) {
         try {
             const payload = this.jwtService.verify(refreshToken);
 
@@ -81,19 +81,7 @@ export class AuthService {
 
             await this.saveRefreshToken(user._id.toString(), newRefreshToken);
 
-            res.cookie("accessToken", accessToken, {
-                httpOnly: true,
-                sameSite: "lax",
-                secure: false,
-            });
-
-            res.cookie("refreshToken", newRefreshToken, {
-                httpOnly: true,
-                sameSite: "lax",
-                secure: false,
-            });
-
-            return { success: true };
+            return { accessToken, refreshToken: newRefreshToken };
         } catch {
             throw new UnauthorizedException("Invalid refresh token");
         }

@@ -257,16 +257,32 @@ export class AuthController {
     return { message: "Login successful" };
   }
 
-
   @Post('refresh')
   async refresh(
     @Req() req,
     @Res({ passthrough: true }) res: Response
   ) {
-    const refreshToken = req.cookies.refreshToken;
-    return this.authService.refreshTokens(refreshToken, res);
-  }
+    const refreshToken = req.cookies.refreshToken as string;
 
+    const { accessToken, refreshToken: newRefreshToken } =
+      await this.authService.refreshTokens(refreshToken);
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
+
+    return { success: true };
+  }
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {

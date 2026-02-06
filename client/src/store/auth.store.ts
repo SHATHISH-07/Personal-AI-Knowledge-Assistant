@@ -13,31 +13,39 @@ interface AuthState {
     logoutUser: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: false,
     isInitialized: false,
     isLoading: false,
 
-
     initializeAuth: async () => {
-        if (get().isInitialized) return;
-
         set({ isLoading: true });
+
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            set({
+                user: null,
+                isAuthenticated: false,
+                isInitialized: true,
+                isLoading: false,
+            });
+            return;
+        }
 
         try {
             const res = await getMe();
+
             set({
                 user: res.data,
                 isAuthenticated: true,
             });
-        } catch (err: unknown) {
-            if (err && typeof err === "object" && "response" in err) {
-                set({
-                    user: null,
-                    isAuthenticated: false,
-                });
-            }
+        } catch {
+            set({
+                user: null,
+                isAuthenticated: false,
+            });
         } finally {
             set({
                 isInitialized: true,
@@ -46,9 +54,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
     },
 
-
     loginUser: async (email: string, password: string) => {
         set({ isLoading: true });
+
         try {
             await login({ email, password });
 
@@ -57,23 +65,30 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({
                 user: res.data,
                 isAuthenticated: true,
-                isInitialized: true,
             });
-        } catch (error) {
-            throw error;
         } finally {
-
-            set({ isLoading: false });
+            set({
+                isInitialized: true,
+                isLoading: false,
+            });
         }
     },
 
     logoutUser: async () => {
-        await logout();
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
         set({
             user: null,
             isAuthenticated: false,
             isInitialized: true,
-            isLoading: false
+            isLoading: false,
         });
     },
 }));

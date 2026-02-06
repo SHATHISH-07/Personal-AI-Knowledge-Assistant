@@ -204,77 +204,20 @@ export class AuthController {
   async googleAuth() {
   }
 
-  @Get("google/callback")
-  @UseGuards(AuthGuard("google"))
-  async googleCallback(@Req() req, @Res() res) {
-
-    const redirectUrl = `${this.configService.get(
-      'FRONTEND_URL',
-    )
-      }/overview`;
-
-    const { accessToken, refreshToken } =
-      await this.authService.handleGoogleUser(req.user);
-
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none" as const,
-      path: "/",
-    };
-
-    res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshToken", refreshToken, cookieOptions);
-
-    return res.redirect(redirectUrl);
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleCallback(@Req() req) {
+    return this.authService.handleGoogleUser(req.user);
   }
 
-  @Post("login")
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const { accessToken, refreshToken } =
-      await this.authService.login(loginDto);
-
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none" as const,
-      path: "/",
-    };
-
-    res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshToken", refreshToken, cookieOptions);
-
-    return { message: "Login successful" };
+  @Post('login')
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto);
   }
 
   @Post('refresh')
-  async refresh(
-    @Req() req,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    const refreshToken = req.cookies.refreshToken as string;
-
-    const { accessToken, refreshToken: newRefreshToken } =
-      await this.authService.refreshTokens(refreshToken);
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
-
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
-
-    return { success: true };
+  async refresh(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshTokens(refreshToken);
   }
 
   @Post('forgot-password')
@@ -287,26 +230,9 @@ export class AuthController {
     return this.authService.resetPassword(dto);
   }
 
-  @Post("logout")
+  @Post('logout')
   @UseGuards(JwtAuthGuard)
-  logout(
-    @Req() req,
-    @Res({ passthrough: true }) res: Response
-  ) {
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
-
+  logout(@Req() req) {
     return this.authService.logout(req.user.userId);
   }
 }

@@ -10,11 +10,36 @@ export const register = (data: {
     return api.post("/auth/register", data);
 };
 
-export const login = (data: {
+export const login = async (data: {
     email: string;
     password: string;
 }) => {
-    return api.post("/auth/login", data);
+    const res = await api.post("/auth/login", data);
+
+    localStorage.setItem("accessToken", res.data.accessToken);
+    localStorage.setItem("refreshToken", res.data.refreshToken);
+
+    return res;
+};
+
+export const refreshToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    const res = await api.post("/auth/refresh", {
+        refreshToken,
+    });
+
+    localStorage.setItem("accessToken", res.data.accessToken);
+    localStorage.setItem("refreshToken", res.data.refreshToken);
+
+    return res;
+};
+
+export const logout = async () => {
+    await api.post("/auth/logout");
+
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
 };
 
 export const getMe = () => {
@@ -26,10 +51,6 @@ export const getSummary = () => {
 };
 
 
-export const logout = () => {
-    return api.post("/auth/logout");
-};
-
 export const resendVerification = ({ email }: { email: string }) => {
     return api.post("/auth/resend-verification", { email });
 };
@@ -37,6 +58,7 @@ export const resendVerification = ({ email }: { email: string }) => {
 export const verifyEmail = (token: string) => {
     return api.get(`/auth/verify-email?token=${token}`);
 };
+
 
 export const requestPasswordReset = (email: string) => {
     return api.post("/auth/forgot-password", { email });
@@ -48,6 +70,6 @@ export const resetPassword = (data: {
 }) => {
     return api.post("/auth/reset-password", {
         token: data.token,
-        password: data.newPassword
+        password: data.newPassword,
     });
 };

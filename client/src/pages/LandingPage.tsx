@@ -29,7 +29,7 @@ const LandingPage = () => {
             ease: "power3.out",
             stagger: 0.2,
           },
-          "-=0.4"
+          "-=0.4",
         )
         .from(
           ".hero-desc",
@@ -39,7 +39,7 @@ const LandingPage = () => {
             duration: 0.8,
             ease: "power3.out",
           },
-          "-=0.6"
+          "-=0.6",
         )
         .from(
           ".hero-btns",
@@ -49,7 +49,7 @@ const LandingPage = () => {
             duration: 0.8,
             ease: "power3.out",
           },
-          "-=0.6"
+          "-=0.6",
         )
         .from(
           ".hero-dashboard",
@@ -60,7 +60,7 @@ const LandingPage = () => {
             duration: 1.2,
             ease: "power4.out",
           },
-          "-=0.6"
+          "-=0.6",
         );
 
       gsap.fromTo(
@@ -77,7 +77,7 @@ const LandingPage = () => {
             start: "top 85%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       gsap.fromTo(
@@ -94,7 +94,7 @@ const LandingPage = () => {
             start: "top 80%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       gsap.fromTo(
@@ -110,7 +110,7 @@ const LandingPage = () => {
             start: "top 75%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
     }, mainRef);
 
@@ -267,16 +267,6 @@ const LandingPage = () => {
 
       {/* HERO SECTION */}
       <section className="relative z-10 pt-36 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center perspective-[1000px]">
-        <div className="hero-badge inline-flex items-center gap-2 px-4 py-1.5 mb-8 border border-white/5 rounded-full bg-[#212121] shadow-xl backdrop-blur-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="text-xs font-mono text-zinc-300 tracking-wide">
-            SYSTEM ONLINE: v2.0
-          </span>
-        </div>
-
         <h2 className="text-4xl md:text-5xl lg:text-8xl font-bold tracking-tight leading-[1.1] md:leading-[0.95] mb-8 text-white">
           <span className="hero-title block">Your Knowledge.</span>
           <span className="hero-title block text-zinc-500">

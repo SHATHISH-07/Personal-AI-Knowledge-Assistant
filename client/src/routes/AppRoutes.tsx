@@ -13,6 +13,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import VerifyEmail from "@/pages/VerifyEmail";
 import ResetPassword from "@/pages/ResetPassword";
 import ForgotPassword from "@/pages/ForgotPassword";
+import OAuthSuccess from "@/pages/OAuthSuccess";
 
 const AppRoutes = () => {
   return (
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/oauth-success" element={<OAuthSuccess />} />
 
       {/* Protected routes */}
       <Route

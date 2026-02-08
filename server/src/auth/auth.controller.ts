@@ -206,8 +206,15 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleCallback(@Req() req) {
-    return this.authService.handleGoogleUser(req.user);
+  async googleCallback(@Req() req, @Res() res) {
+    const { accessToken, refreshToken } =
+      await this.authService.handleGoogleUser(req.user);
+
+    const frontend = this.configService.get('FRONTEND_URL');
+
+    return res.redirect(
+      `${frontend}/oauth-success?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
   }
 
   @Post('login')

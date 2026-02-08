@@ -28,7 +28,7 @@ export default function OAuthSuccess() {
   }, []);
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
+    <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-[#212121]">
       <Spinner />
     </div>
   );
